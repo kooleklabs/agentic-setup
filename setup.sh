@@ -796,19 +796,42 @@ log_create "review-pr.md (universal)"
 # --- /plan-feature (UNIVERSAL) ---
 cat > .claude/commands/plan-feature.md << 'EOF'
 ---
-description: Enter plan mode to decompose a feature into implementation phases. Creates a structured plan before any code is written.
+description: Enter plan mode to decompose a feature into implementation phases with explicit rollback strategies. Creates a structured plan before any code is written.
 ---
 
 Enter plan mode. Before writing any code:
 
-1. Understand the requirement — ask clarifying questions if ambiguous
-2. Check existing codebase for similar patterns (find 2-3 examples)
-3. Create a phased plan:
-   - Phase 1: [what] → [files to create/modify] → [how to verify]
-   - Phase 2: [what] → [files] → [verify]
-   - Each phase leaves the codebase in a working state
-4. Identify risks and edge cases
-5. Present the plan and wait for approval before implementing
+## Step 1 — Understand the requirement
+- Ask clarifying questions if the requirement is ambiguous
+- Confirm: what does done look like? How will it be verified?
+- Identify who is affected (internal service, external API consumers, end users)
+
+## Step 2 — Audit the blast radius
+- Check what imports/depends on the files you intend to touch
+- Flag files imported by 5+ modules as HIGH risk — prefer additive over mutating changes
+- Check /contracts/ — any API surface change needs a version consideration
+
+## Step 3 — Build the risk matrix
+For each significant change, classify risk (LOW / MEDIUM / HIGH / CRITICAL) and mitigation.
+DB schema changes and auth/permissions changes are always HIGH or CRITICAL.
+
+## Step 4 — Create a phased plan
+Structure each phase with:
+- Goal: what this phase achieves
+- Files: list of files to create or modify
+- Steps with verification commands
+- Rollback: exact command or action to undo this phase if it fails
+- Checkpoint: codebase must be in a working state after this phase
+
+Rules: each phase leaves the codebase working; DB migrations get their own phase with a down migration.
+
+## Step 5 — Present and get approval
+Show the full plan — phases, risk matrix, rollback steps — and wait for explicit approval before writing any code.
+
+## Rules
+- No code before plan approval
+- Every phase has a named rollback step — "revert the commit" is not a rollback plan
+- Risk CRITICAL items require human sign-off before proceeding
 EOF
 log_create "plan-feature.md (universal)"
 
@@ -966,6 +989,146 @@ Output in this exact format:
 - Output is ready to paste into Slack/Teams/Notion with no edits needed
 EOF
 log_create "standup.md (universal)"
+
+# --- /debug (UNIVERSAL) ---
+cat > .claude/commands/debug.md << 'EOF'
+---
+description: Structured debugging loop. Reproduce the failure, isolate the cause, fix the root cause, verify no regressions. Use whenever something is broken instead of guessing.
+---
+
+Work through this loop — do not skip steps, do not jump to fixes before Step 3.
+
+## Step 1 — Reproduce
+Confirm the failure is real and consistent:
+- Run the failing test / command / request exactly as reported
+- Record: exact error message, stack trace, line number
+- Confirm it fails reliably (not flaky) — run 3 times if unsure
+- Note: which environment, which branch, which inputs trigger it
+
+If you cannot reproduce it → stop and ask for more context. Do not guess.
+
+## Step 2 — Read the error
+Before touching any code:
+- Read the full stack trace top to bottom
+- Identify the FIRST failure point (not the symptom — the origin)
+- Check if the error message names a file/line — read that file
+- Look for: null dereference, missing field, wrong type, unhandled state, race condition
+
+Common traps:
+- The line that throws is rarely the line that's wrong
+- "undefined is not a function" means the caller passed bad data, not that the function is broken
+- Timeout errors are usually about upstream dependencies, not the timed-out code
+
+## Step 3 — Isolate
+Narrow the failure to the smallest possible scope:
+```bash
+pytest tests/path/test_name.py::TestClass::test_method -v
+npm test -- --testPathPattern="failing-test-name"
+go test ./pkg/... -run TestSpecificCase -v
+```
+
+Check git history for the last-working commit:
+```bash
+git log --oneline -20
+git bisect start   # if needed
+```
+
+Form a hypothesis: "I believe X is wrong because Y." Write it down before touching code.
+
+## Step 4 — Fix the root cause
+- Fix the cause identified in Step 3, not the symptom
+- Minimal change: touch as few lines as possible
+- If the fix requires changing 5+ files, your hypothesis is probably wrong — go back to Step 2
+
+Do NOT:
+- Add try/catch to swallow the error
+- Add null checks without understanding why null got there
+- Hardcode a value to make the test pass
+
+## Step 5 — Verify
+- Run the previously-failing test — must pass
+- Run the full test suite — no new failures introduced
+- Run lint — clean
+
+If any test that was passing now fails: your fix has a side effect. Go back to Step 4.
+
+## Step 6 — Document
+If the bug was non-obvious, add a comment explaining WHY the fix works:
+```python
+# Without the null check here, users with no profile crash on /settings.
+# Profile is optional — created lazily on first visit.
+```
+
+## Rules
+- Never skip Step 1 — fix the actual error, not the reported description
+- Hypothesis before code — state what you think is wrong before changing anything
+- One fix at a time — multiple simultaneous changes make regression detection impossible
+- If you've tried 3 hypotheses and none worked, stop and escalate with your findings
+EOF
+log_create "debug.md (universal)"
+
+# --- /check-contracts (UNIVERSAL) ---
+cat > .claude/commands/check-contracts.md << 'EOF'
+---
+description: Verify API contracts in /contracts/ match actual implementations. Detects drift between spec and code before it reaches production. Run before merging any API-touching branch.
+---
+
+Audit contract files against the current implementation:
+
+## Step 1 — Discover contracts
+```bash
+find contracts/ -type f \( -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null
+```
+
+If no /contracts/ directory exists → report as a gap and stop.
+
+## Step 2 — Identify changed API surface
+```bash
+git diff main...HEAD --name-only | grep -E "(route|handler|controller|endpoint|api|view)"
+```
+
+For each changed file, extract the endpoints it defines.
+
+## Step 3 — Cross-check each contract
+
+For every contract file, verify:
+- Every path in the contract exists in the implementation (flag DEAD SPEC if not)
+- Every path in the implementation is documented (flag UNDOCUMENTED if not)
+- Request/response field names and types match
+- Status codes match (success AND error codes)
+
+## Step 4 — Check version consistency
+If a breaking change is detected (field removed, type changed, required field added):
+- Contract version must be bumped
+- Flag as BREAKING — VERSION BUMP REQUIRED
+
+## Step 5 — Report
+
+Output in this format:
+
+```
+## Contract Audit — [date]
+
+### [contract-file.yaml]
+✅ Endpoints: all matched
+⚠️  UNDOCUMENTED: POST /api/v1/users/bulk (in code, not in spec)
+❌ DEAD SPEC: DELETE /api/v1/sessions/{id} (in spec, not in code)
+❌ SCHEMA DRIFT: GET /api/v1/users response missing created_at field
+❌ BREAKING — VERSION BUMP REQUIRED: email changed from optional to required
+
+### Summary
+- [N] contracts audited
+- [N] drift issues found
+- [N] breaking changes requiring version bump
+```
+
+## Rules
+- UNDOCUMENTED endpoints are a gap — they cannot be tested or consumed reliably
+- DEAD SPEC entries should be removed immediately
+- Never merge a breaking change without a version bump in the contract file
+- If no contracts directory exists, recommend creating one as a gap item
+EOF
+log_create "check-contracts.md (universal)"
 
 # ============================================================
 # HOOKS — Layer 6
@@ -1170,7 +1333,7 @@ echo -e "  ├── .mcp.json              ${YELLOW}← add your MCP servers${N
 echo -e "  ├── .claude/"
 echo -e "  │   ├── agents/            (6 agents: 3 universal + 3 customizable)"
 echo -e "  │   ├── skills/            (5 skills: 4 universal + 1 customizable)"
-echo -e "  │   ├── commands/          (6 universal commands)"
+echo -e "  │   ├── commands/          (8 universal commands)"
 echo -e "  │   ├── hooks/             (2 universal hooks)"
 echo -e "  │   └── settings.json"
 echo -e "  └── contracts/"

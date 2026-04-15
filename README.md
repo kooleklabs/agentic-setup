@@ -190,8 +190,10 @@ your-project/
 │   │   ├── self-review.md             ← Universal (test → lint → security fix loop)
 │   │   ├── smart-pr.md                ← Universal (auto-generate PR description from diff)
 │   │   ├── standup.md                 ← Universal (daily status from git + TODOs + tests)
+│   │   ├── debug.md                   ← Universal (reproduce → isolate → fix → verify loop)
+│   │   ├── check-contracts.md         ← Universal (verify /contracts/ match implementations)
 │   │   ├── review-pr.md               ← Universal
-│   │   ├── plan-feature.md            ← Universal
+│   │   ├── plan-feature.md            ← Universal (phased plan with rollback strategies)
 │   │   └── design-review.md           ← Universal
 │   └── hooks/                         ← WHEN to auto-verify
 │       ├── pre-commit.sh              ← Universal (auto-detects stack)
