@@ -38,9 +38,7 @@ A batteries-included framework that turns any codebase into an **agent-ready** w
 
 ## 🚀 Start here
 
-**Where do you want to start?** Pick your path:
-
-![Start here decision flow](./docs/infographic-start-here.svg)
+![Framework overview](./docs/framework-overview.png)
 
 > **Prerequisites:** `bash`, `git`, and [Claude Code](https://docs.claude.com/en/docs/claude-code) installed.
 
@@ -132,9 +130,7 @@ Open [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md), copy the prompt, fill in your
 
 ## 🗓 Daily workflow
 
-Once the framework is installed, **this is how you use it day to day:**
-
-![Daily workflow](./docs/infographic-daily-workflow.svg)
+The infographic above covers the full workflow — from picking your setup path to shipping. Here's a quick reference for each phase:
 
 ---
 
