@@ -67,15 +67,19 @@ Use this when you want the scaffolding now and will add domain skills manually.
 Feed Claude a PRD, spec, or one-liner idea. It generates the full framework with domain-specific agents, skills, and API contracts.
 
 ```bash
-# From a document
-bash generate.sh --from proposal.docx
-bash generate.sh --from requirements.md
+cd your-project
 
-# From an inline idea
-bash generate.sh --idea "Ride-hailing app with Go Fiber and PostgreSQL"
+# No clone needed — run directly via curl
+curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/generate.sh | bash -s -- --from /path/to/proposal.docx
+curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/generate.sh | bash -s -- --idea "Ride-hailing app with Go Fiber and PostgreSQL"
+
+# Or if you have the repo cloned
+bash /path/to/agentic-setup/generate.sh --from /path/to/proposal.docx
+bash /path/to/agentic-setup/generate.sh --from /path/to/requirements.md
+bash /path/to/agentic-setup/generate.sh --idea "Ride-hailing app with Go Fiber and PostgreSQL"
 
 # Interactive — paste your requirement when prompted
-bash generate.sh
+bash /path/to/agentic-setup/generate.sh
 ```
 
 **What Claude generates for you:**
@@ -224,7 +228,7 @@ your-project/
 <summary><b>E-commerce platform</b></summary>
 
 ```bash
-bash generate.sh --idea "E-commerce platform for Malaysian SMEs with product catalog, \
+bash /path/to/agentic-setup/generate.sh --idea "E-commerce platform for Malaysian SMEs with product catalog, \
 shopping cart, Stripe payments, order management, and delivery tracking. \
 Stack: Next.js + Go Fiber + PostgreSQL + Redis. Deploy on AWS."
 ```
@@ -235,7 +239,7 @@ Stack: Next.js + Go Fiber + PostgreSQL + Redis. Deploy on AWS."
 <summary><b>Mobile fitness app</b></summary>
 
 ```bash
-bash generate.sh --from fitness-app-prd.md
+bash /path/to/agentic-setup/generate.sh --from /path/to/fitness-app-prd.md
 ```
 
 </details>
@@ -244,7 +248,7 @@ bash generate.sh --from fitness-app-prd.md
 <summary><b>Internal enterprise tool</b></summary>
 
 ```bash
-bash generate.sh --idea "Internal HR management system with leave tracking, payroll \
+bash /path/to/agentic-setup/generate.sh --idea "Internal HR management system with leave tracking, payroll \
 calculation, and employee directory. Stack: Laravel + Vue.js + MySQL. \
 Deploy on company K3s cluster."
 ```
@@ -263,7 +267,7 @@ See the full scenario in [`examples/legacy-django-api.md`](./examples/legacy-dja
 </details>
 
 Working requirement files live in [`examples/`](./examples):
-- New project: `bash generate.sh --from examples/ecommerce-sme.md`
+- New project: `bash /path/to/agentic-setup/generate.sh --from /path/to/agentic-setup/examples/ecommerce-sme.md`
 - Existing project: see `examples/legacy-django-api.md` *(point `--dir` at your actual repo)*
 
 ---
