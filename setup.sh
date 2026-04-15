@@ -265,13 +265,27 @@ permissionMode: plan
 You are a senior software architect. Your job:
 
 1. DECOMPOSE complex requirements into clear, independent tasks
-2. DESIGN system structure following CLAUDE.md patterns
-3. DELEGATE implementation to specialized agents
-4. VERIFY all pieces integrate correctly
+2. IMPACT ANALYSIS — before touching any file, map what depends on it
+3. DESIGN system structure following CLAUDE.md patterns
+4. DELEGATE implementation to specialized agents
+5. VERIFY all pieces integrate correctly
+
+## Impact analysis (run before every plan)
+For each file you intend to modify:
+```bash
+# Who imports this file?
+grep -r "from.*<module>" --include="*.py" -l    # Python
+grep -r "require.*<module>" --include="*.js" -l  # JS/TS
+grep -r "import.*<package>" --include="*.go" -l  # Go
+```
+Flag any file that:
+- Is imported by 5+ other files → HIGH blast radius, prefer additive changes
+- Is part of a public API contract (/contracts/) → must version bump
+- Contains shared state (singleton, global config) → test all consumers
 
 ## Decision framework
-- 1-2 files → handle directly
-- 3+ files → create plan, then delegate to subagents
+- 1-2 files, low blast radius → handle directly
+- 3+ files OR high blast radius → create plan, then delegate to subagents
 - Cross-domain changes → check /contracts/ first
 - Security-sensitive code → delegate to security-reviewer
 
@@ -815,6 +829,144 @@ Compare the current implementation against the design:
 EOF
 log_create "design-review.md (universal)"
 
+# --- /smart-pr (UNIVERSAL) ---
+cat > .claude/commands/smart-pr.md << 'EOF'
+---
+description: Generate a structured PR description from the current branch diff. Run after /self-review passes. Produces title, summary, test plan, and risk notes ready to paste into GitHub/GitLab.
+---
+
+Generate a pull request description for the current branch:
+
+## Step 1 — Gather diff data
+```bash
+git diff main...HEAD --stat
+git diff main...HEAD
+git log main...HEAD --oneline
+```
+
+## Step 2 — Classify changes
+Group changed files into categories:
+- **Features**: new capabilities added
+- **Fixes**: bugs corrected
+- **Refactors**: behaviour-preserving restructuring
+- **Tests**: test additions or updates
+- **Config / Infra**: CI, build, environment changes
+- **Docs**: documentation only
+
+## Step 3 — Extract context
+- Read CLAUDE.md for project name and stack
+- Read commit messages for intent and motivation
+- Check if any changed files touch API contracts (/contracts/) or DB migrations
+
+## Step 4 — Assess risks
+For each changed area, flag:
+- **Breaking change**: API contract modified, DB migration required, env var added
+- **Side-effect risk**: shared utility touched, auth/permissions changed
+- **Test coverage gap**: logic changed but no new tests
+
+## Step 5 — Write the description
+
+Output a PR description in this exact format:
+
+```markdown
+## What
+[1–3 bullets: what changed, specific and concrete]
+
+## Why
+[1–2 sentences: the problem this solves or the goal it achieves]
+
+## How
+[Brief: the key technical decision or approach — only if non-obvious]
+
+## Test plan
+- [ ] [Specific action to verify the main scenario works]
+- [ ] [Edge case or regression to check]
+- [ ] Tests pass: `[test command]`
+
+## Risks
+- [Risk]: [Mitigation] — or "None" if clean
+```
+
+## Rules
+- Never invent motivation — derive it from commits and code only
+- If a breaking change is detected, say so explicitly in the Risks section
+- Keep "What" bullets specific and concrete, not vague
+- Skip the "How" section if the implementation is straightforward
+- The description is ready to paste — no placeholders, no [TODO] markers
+EOF
+log_create "smart-pr.md (universal)"
+
+# --- /standup (UNIVERSAL) ---
+cat > .claude/commands/standup.md << 'EOF'
+---
+description: Generate a daily standup summary. Scans today's git activity, open TODOs, and failing checks to produce a concise status report.
+---
+
+Generate a standup summary for today:
+
+## Step 1 — Today's git activity
+```bash
+git log --since="yesterday 5pm" --until="now" --oneline --all --author="$(git config user.name)"
+git diff HEAD~1..HEAD --stat 2>/dev/null || true
+```
+
+If no commits today, check the last working day:
+```bash
+git log --since="3 days ago" --oneline -10 --author="$(git config user.name)"
+```
+
+## Step 2 — Open TODOs and in-progress markers
+Search for work-in-progress signals:
+```bash
+git stash list
+git status --short
+```
+
+Grep for inline markers in modified files:
+- TODO, FIXME, HACK, WIP, XXX
+
+## Step 3 — Test and lint health
+- Detect and run the project test suite (check package.json, go.mod, Cargo.toml, pytest)
+- Report: passing / failing / not run
+- If failures exist, list the failing test names (not full output)
+
+## Step 4 — Current branch context
+```bash
+git branch --show-current
+git log main..HEAD --oneline 2>/dev/null || git log --oneline -5
+```
+
+Note if the branch is ahead of, behind, or diverged from main.
+
+## Step 5 — Write the standup
+
+Output in this exact format:
+
+```
+## Standup — [DATE]
+
+**Yesterday**
+- [What was completed — derived from commits]
+
+**Today**
+- [What is in progress — derived from current branch / stash / WIP markers]
+
+**Blockers**
+- [Failing tests / lint errors / open questions] — or "None"
+
+**Branch**: [branch-name] — [N commits ahead of main | up to date]
+**Tests**: [passing | N failing | not run]
+```
+
+## Rules
+- Derive everything from actual git data — never invent activity
+- If no commits exist yet today, say "No commits yet today" under Yesterday
+- Keep bullets concrete: "Implemented self-review loop in api-engineer agent" not "Did some work"
+- Blockers section is honest — list real failures, don't omit them
+- Output is ready to paste into Slack/Teams/Notion with no edits needed
+EOF
+log_create "standup.md (universal)"
+
 # ============================================================
 # HOOKS — Layer 6
 # ============================================================
@@ -1018,7 +1170,7 @@ echo -e "  ├── .mcp.json              ${YELLOW}← add your MCP servers${N
 echo -e "  ├── .claude/"
 echo -e "  │   ├── agents/            (6 agents: 3 universal + 3 customizable)"
 echo -e "  │   ├── skills/            (5 skills: 4 universal + 1 customizable)"
-echo -e "  │   ├── commands/          (4 universal commands)"
+echo -e "  │   ├── commands/          (6 universal commands)"
 echo -e "  │   ├── hooks/             (2 universal hooks)"
 echo -e "  │   └── settings.json"
 echo -e "  └── contracts/"

@@ -188,6 +188,8 @@ your-project/
 │   │   └── [domain-skills]/SKILL.md   ← Add per project
 │   ├── commands/                      ← HOW to trigger workflows
 │   │   ├── self-review.md             ← Universal (test → lint → security fix loop)
+│   │   ├── smart-pr.md                ← Universal (auto-generate PR description from diff)
+│   │   ├── standup.md                 ← Universal (daily status from git + TODOs + tests)
 │   │   ├── review-pr.md               ← Universal
 │   │   ├── plan-feature.md            ← Universal
 │   │   └── design-review.md           ← Universal
