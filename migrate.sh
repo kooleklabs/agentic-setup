@@ -387,7 +387,11 @@ cat "$ANALYSIS_FILE" >> "$PHASE3_PROMPT"
 echo "" >> "$PHASE3_PROMPT"
 echo "## Generated .claude/ framework (find output)" >> "$PHASE3_PROMPT"
 echo "" >> "$PHASE3_PROMPT"
-find .claude -type f | sort >> "$PHASE3_PROMPT"
+if [[ -d ".claude" ]]; then
+  find .claude -type f | sort >> "$PHASE3_PROMPT"
+else
+  echo "(no .claude/ directory found — Phase 2 may not have created framework files)" >> "$PHASE3_PROMPT"
+fi
 echo "" >> "$PHASE3_PROMPT"
 echo "CLAUDE.md content:" >> "$PHASE3_PROMPT"
 [[ -f "CLAUDE.md" ]] && cat CLAUDE.md >> "$PHASE3_PROMPT"
