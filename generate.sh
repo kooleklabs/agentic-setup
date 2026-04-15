@@ -197,8 +197,34 @@ echo ""
 if command -v claude &> /dev/null; then
   echo -e "${GREEN}[✓]${NC} Claude Code detected — generating customized framework..."
   echo ""
+  echo -e "  ${BOLD}Expected duration:${NC} 3-8 minutes for a typical requirement."
+  echo -e "  Claude runs silently in the background while writing files."
+  echo -e "  ${CYAN}Tip:${NC} open another terminal and run ${BOLD}ls -lt .claude/skills/ .claude/agents/${NC}"
+  echo -e "  to watch files appear. A dot below = still working."
+  echo ""
+  printf "  "
+
+  # Background heartbeat — one dot every 5s so the user knows it's alive.
+  ( while true; do printf "."; sleep 5; done ) &
+  HEARTBEAT_PID=$!
+  # Kill the heartbeat if the script exits early (Ctrl-C, error, etc.)
+  trap 'kill $HEARTBEAT_PID 2>/dev/null; echo ""' EXIT INT TERM
+
   claude -p "$(cat "$PROMPT_FILE")"
-  rm "$PROMPT_FILE"
+  CLAUDE_EXIT=$?
+
+  kill $HEARTBEAT_PID 2>/dev/null
+  wait $HEARTBEAT_PID 2>/dev/null
+  trap - EXIT INT TERM
+  echo ""
+
+  rm -f "$PROMPT_FILE"
+
+  if [[ $CLAUDE_EXIT -ne 0 ]]; then
+    echo -e "${YELLOW}[!]${NC} claude -p exited with code $CLAUDE_EXIT"
+    echo -e "    If files weren't fully generated, open Claude Code interactively"
+    echo -e "    in this directory and continue from there."
+  fi
 else
   # Save prompt for manual use
   SAVED_PROMPT=".claude/GENERATE_PROMPT.md"
