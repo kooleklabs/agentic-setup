@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="50%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <filter id="cardShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glowBlue">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#0ea5e9" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrowGray" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="620" fill="url(#bgGrad)" rx="16"/>
+
+  <!-- Header bar -->
+  <rect x="0" y="0" width="960" height="72" fill="url(#headerGrad)" rx="16"/>
+  <rect x="0" y="56" width="960" height="16" fill="url(#headerGrad)"/>
+  <text x="480" y="30" text-anchor="middle" font-size="20" font-weight="800" fill="#fff" letter-spacing="0.5">Daily Workflow</text>
+  <text x="480" y="54" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.75)" letter-spacing="2">UNIVERSAL AGENTIC DEVELOPMENT FRAMEWORK  ·  v1.1.0</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ROW 1: MORNING
+  ═══════════════════════════════════════════════════════════ -->
+  <!-- Phase label -->
+  <text x="36" y="112" font-size="10" font-weight="700" fill="#475569" letter-spacing="2">MORNING</text>
+  <line x1="36" y1="118" x2="200" y2="118" stroke="#1e3a5f" stroke-width="1"/>
+
+  <!-- /onboard card -->
+  <rect x="36" y="126" width="190" height="78" rx="12" fill="#0f2744" stroke="#0ea5e9" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="131" y="151" text-anchor="middle" font-size="13" font-weight="700" fill="#38bdf8">/onboard</text>
+  <text x="131" y="168" text-anchor="middle" font-size="10" fill="#64748b">New session or</text>
+  <text x="131" y="181" text-anchor="middle" font-size="10" fill="#64748b">new team member</text>
+  <text x="131" y="196" text-anchor="middle" font-size="9" fill="#1e40af">→ orientation summary</text>
+
+  <!-- Arrow → -->
+  <line x1="226" y1="165" x2="258" y2="165" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <text x="242" y="158" text-anchor="middle" font-size="9" fill="#334155">or</text>
+
+  <!-- /standup card -->
+  <rect x="262" y="126" width="190" height="78" rx="12" fill="#1a2a1a" stroke="#10b981" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="357" y="151" text-anchor="middle" font-size="13" font-weight="700" fill="#34d399">/standup</text>
+  <text x="357" y="168" text-anchor="middle" font-size="10" fill="#64748b">Already oriented,</text>
+  <text x="357" y="181" text-anchor="middle" font-size="10" fill="#64748b">start of each day</text>
+  <text x="357" y="196" text-anchor="middle" font-size="9" fill="#166534">→ Yesterday / Today / Blockers</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ROW 1 RIGHT: PLANNING
+  ═══════════════════════════════════════════════════════════ -->
+  <text x="530" y="112" font-size="10" font-weight="700" fill="#475569" letter-spacing="2">PLANNING</text>
+  <line x1="530" y1="118" x2="924" y2="118" stroke="#1e3a5f" stroke-width="1"/>
+
+  <!-- /plan-feature card -->
+  <rect x="530" y="126" width="190" height="78" rx="12" fill="#1a1a2e" stroke="#6366f1" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="625" y="151" text-anchor="middle" font-size="13" font-weight="700" fill="#818cf8">/plan-feature</text>
+  <text x="625" y="168" text-anchor="middle" font-size="10" fill="#64748b">Before any non-trivial</text>
+  <text x="625" y="181" text-anchor="middle" font-size="10" fill="#64748b">change or new feature</text>
+  <text x="625" y="196" text-anchor="middle" font-size="9" fill="#3730a3">→ risk matrix + rollback plan</text>
+
+  <!-- Arrow → -->
+  <line x1="720" y1="165" x2="734" y2="165" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- /adr card -->
+  <rect x="738" y="126" width="186" height="78" rx="12" fill="#2d1a1a" stroke="#f59e0b" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="831" y="151" text-anchor="middle" font-size="13" font-weight="700" fill="#fbbf24">/adr</text>
+  <text x="831" y="168" text-anchor="middle" font-size="10" fill="#64748b">Significant architecture</text>
+  <text x="831" y="181" text-anchor="middle" font-size="10" fill="#64748b">decision made</text>
+  <text x="831" y="196" text-anchor="middle" font-size="9" fill="#92400e">→ docs/decisions/NNNN.md</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FLOW ARROW DOWN
+  ═══════════════════════════════════════════════════════════ -->
+  <line x1="480" y1="204" x2="480" y2="228" stroke="#334155" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ROW 2: BUILDING
+  ═══════════════════════════════════════════════════════════ -->
+  <text x="36" y="248" font-size="10" font-weight="700" fill="#475569" letter-spacing="2">BUILDING  (agents do the work)</text>
+  <line x1="36" y1="254" x2="924" y2="254" stroke="#1e3a5f" stroke-width="1"/>
+
+  <!-- api-engineer -->
+  <rect x="36" y="262" width="200" height="72" rx="12" fill="#111827" stroke="#0891b2" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="136" y="284" text-anchor="middle" font-size="12" font-weight="700" fill="#22d3ee">api-engineer</text>
+  <text x="136" y="300" text-anchor="middle" font-size="10" fill="#64748b">Backend · REST · DB</text>
+  <text x="136" y="315" text-anchor="middle" font-size="10" fill="#64748b">service logic · queries</text>
+  <text x="136" y="327" text-anchor="middle" font-size="9" fill="#0e7490">Sonnet · auto-loops until clean</text>
+
+  <!-- frontend-engineer -->
+  <rect x="252" y="262" width="200" height="72" rx="12" fill="#111827" stroke="#ec4899" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="352" y="284" text-anchor="middle" font-size="12" font-weight="700" fill="#f472b6">frontend-engineer</text>
+  <text x="352" y="300" text-anchor="middle" font-size="10" fill="#64748b">UI · components · a11y</text>
+  <text x="352" y="315" text-anchor="middle" font-size="10" fill="#64748b">Figma → implementation</text>
+  <text x="352" y="327" text-anchor="middle" font-size="9" fill="#9d174d">Sonnet · design-system skill</text>
+
+  <!-- test-engineer -->
+  <rect x="468" y="262" width="200" height="72" rx="12" fill="#111827" stroke="#22c55e" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="568" y="284" text-anchor="middle" font-size="12" font-weight="700" fill="#4ade80">test-engineer</text>
+  <text x="568" y="300" text-anchor="middle" font-size="10" fill="#64748b">Unit · integration · edge</text>
+  <text x="568" y="315" text-anchor="middle" font-size="10" fill="#64748b">cases · coverage</text>
+  <text x="568" y="327" text-anchor="middle" font-size="9" fill="#166534">Sonnet · testing skill</text>
+
+  <!-- devops-engineer -->
+  <rect x="684" y="262" width="200" height="72" rx="12" fill="#111827" stroke="#f97316" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="784" y="284" text-anchor="middle" font-size="12" font-weight="700" fill="#fb923c">devops-engineer</text>
+  <text x="784" y="300" text-anchor="middle" font-size="10" fill="#64748b">Docker · CI/CD · infra</text>
+  <text x="784" y="315" text-anchor="middle" font-size="10" fill="#64748b">health checks · rollback</text>
+  <text x="784" y="327" text-anchor="middle" font-size="9" fill="#9a3412">Sonnet · customize per stack</text>
+
+  <!-- Flow arrow down -->
+  <line x1="480" y1="334" x2="480" y2="358" stroke="#334155" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ROW 3: WHEN THINGS BREAK
+  ═══════════════════════════════════════════════════════════ -->
+  <text x="36" y="378" font-size="10" font-weight="700" fill="#475569" letter-spacing="2">WHEN THINGS BREAK</text>
+  <line x1="36" y1="384" x2="924" y2="384" stroke="#1e3a5f" stroke-width="1"/>
+
+  <!-- /debug card — centered and wide -->
+  <rect x="200" y="392" width="560" height="64" rx="12" fill="#2d0a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="480" y="416" text-anchor="middle" font-size="14" font-weight="800" fill="#f87171">/debug</text>
+  <text x="480" y="434" text-anchor="middle" font-size="10" fill="#94a3b8">Reproduce  →  Read error  →  Isolate  →  Hypothesize  →  Fix root cause  →  Verify no regressions</text>
+  <text x="480" y="449" text-anchor="middle" font-size="9" fill="#7f1d1d">Never guess · hypothesis before code · one fix at a time · escalate after 3 failed hypotheses</text>
+
+  <!-- Flow arrow down -->
+  <line x1="480" y1="456" x2="480" y2="480" stroke="#334155" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ROW 4: SHIPPING
+  ═══════════════════════════════════════════════════════════ -->
+  <text x="36" y="500" font-size="10" font-weight="700" fill="#475569" letter-spacing="2">BEFORE COMMITTING  &amp;  SHIPPING</text>
+  <line x1="36" y1="506" x2="924" y2="506" stroke="#1e3a5f" stroke-width="1"/>
+
+  <!-- /self-review -->
+  <rect x="36" y="514" width="190" height="68" rx="12" fill="#0f2217" stroke="#10b981" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="131" y="536" text-anchor="middle" font-size="12" font-weight="700" fill="#34d399">/self-review</text>
+  <text x="131" y="552" text-anchor="middle" font-size="10" fill="#64748b">Tests → Lint →</text>
+  <text x="131" y="565" text-anchor="middle" font-size="10" fill="#64748b">Security spot-check</text>
+  <text x="131" y="575" text-anchor="middle" font-size="8" fill="#166534">loops until green</text>
+
+  <line x1="226" y1="548" x2="246" y2="548" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- /check-contracts -->
+  <rect x="250" y="514" width="190" height="68" rx="12" fill="#1a0f2e" stroke="#8b5cf6" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="345" y="536" text-anchor="middle" font-size="11" font-weight="700" fill="#a78bfa">/check-contracts</text>
+  <text x="345" y="552" text-anchor="middle" font-size="10" fill="#64748b">API surface changed?</text>
+  <text x="345" y="565" text-anchor="middle" font-size="10" fill="#64748b">Verify spec matches code</text>
+  <text x="345" y="575" text-anchor="middle" font-size="8" fill="#4c1d95">flags drift + breaking Δ</text>
+
+  <line x1="440" y1="548" x2="460" y2="548" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- /smart-pr -->
+  <rect x="464" y="514" width="190" height="68" rx="12" fill="#1a1535" stroke="#6366f1" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="559" y="536" text-anchor="middle" font-size="12" font-weight="700" fill="#818cf8">/smart-pr</text>
+  <text x="559" y="552" text-anchor="middle" font-size="10" fill="#64748b">Generate PR description</text>
+  <text x="559" y="565" text-anchor="middle" font-size="10" fill="#64748b">from actual diff</text>
+  <text x="559" y="575" text-anchor="middle" font-size="8" fill="#3730a3">What · Why · Risks</text>
+
+  <line x1="654" y1="548" x2="674" y2="548" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- /review-pr -->
+  <rect x="678" y="514" width="246" height="68" rx="12" fill="#0f2217" stroke="#0ea5e9" stroke-width="1.5" filter="url(#cardShadow)"/>
+  <text x="801" y="536" text-anchor="middle" font-size="12" font-weight="700" fill="#38bdf8">/review-pr</text>
+  <text x="801" y="552" text-anchor="middle" font-size="10" fill="#64748b">Code quality + conventions</text>
+  <text x="801" y="565" text-anchor="middle" font-size="10" fill="#64748b">checked against CLAUDE.md</text>
+  <text x="801" y="575" text-anchor="middle" font-size="8" fill="#0e7490">security-reviewer delegated</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       GOLDEN PATH BANNER
+  ═══════════════════════════════════════════════════════════ -->
+  <rect x="36" y="595" width="888" height="18" rx="4" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="480" y="608" text-anchor="middle" font-size="10" fill="#475569">Golden path: </text>
+  <text x="560" y="608" text-anchor="start" font-size="10" fill="#64748b">/plan-feature  →  agent builds  →  /self-review  →  /smart-pr  →  /review-pr</text>
+
+</svg>

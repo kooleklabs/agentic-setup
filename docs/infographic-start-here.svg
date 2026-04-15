@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" width="900" height="580" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="glowBlue">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#0ea5e9" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glowGreen">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#10b981" flood-opacity="0.5"/>
+    </filter>
+    <marker id="arrowWhite" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#8b5cf6"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="580" fill="url(#bgGrad)" rx="16"/>
+
+  <!-- Subtle grid lines -->
+  <line x1="0" y1="100" x2="900" y2="100" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="0" y1="200" x2="900" y2="200" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="0" y1="300" x2="900" y2="300" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="0" y1="400" x2="900" y2="400" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="0" y1="500" x2="900" y2="500" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="225" y1="0" x2="225" y2="580" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="450" y1="0" x2="450" y2="580" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="675" y1="0" x2="675" y2="580" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+
+  <!-- Header -->
+  <text x="450" y="46" text-anchor="middle" font-size="22" font-weight="700" fill="#f8fafc" letter-spacing="0.5">Universal Agentic Development Framework</text>
+  <text x="450" y="72" text-anchor="middle" font-size="13" fill="#94a3b8" letter-spacing="1">WHERE DO YOU WANT TO START?</text>
+
+  <!-- Divider -->
+  <line x1="60" y1="85" x2="840" y2="85" stroke="#334155" stroke-width="1"/>
+
+  <!-- ── START NODE ── -->
+  <rect x="300" y="105" width="300" height="52" rx="26" fill="url(#tealGrad)" filter="url(#glowBlue)"/>
+  <text x="450" y="127" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">Pick your path</text>
+  <text x="450" y="146" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.8)">based on your situation</text>
+
+  <!-- Arrow down from start, splits to left and right -->
+  <!-- Left arrow -->
+  <line x1="360" y1="157" x2="220" y2="210" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowWhite)"/>
+  <!-- Right arrow -->
+  <line x1="540" y1="157" x2="680" y2="210" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowWhite)"/>
+
+  <!-- ── LEFT BRANCH: NEW PROJECT ── -->
+  <!-- Label above -->
+  <text x="180" y="203" text-anchor="middle" font-size="11" fill="#94a3b8">Starting fresh</text>
+
+  <!-- NEW PROJECT box -->
+  <rect x="60" y="215" width="240" height="56" rx="12" fill="#1e3a5f" stroke="#0ea5e9" stroke-width="1.5"/>
+  <text x="180" y="239" text-anchor="middle" font-size="13" font-weight="700" fill="#38bdf8">🆕  New Project</text>
+  <text x="180" y="258" text-anchor="middle" font-size="11" fill="#94a3b8">PRD, spec, or one-liner idea</text>
+
+  <!-- Arrow down -->
+  <line x1="180" y1="271" x2="180" y2="310" stroke="#0ea5e9" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- generate.sh box -->
+  <rect x="70" y="315" width="220" height="62" rx="12" fill="url(#greenGrad)" filter="url(#glowGreen)"/>
+  <text x="180" y="340" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">generate.sh</text>
+  <text x="180" y="358" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.85)">--idea "..." · --from file.md</text>
+  <text x="180" y="370" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.7)">Path 2 · Recommended</text>
+
+  <!-- Arrow down from generate.sh -->
+  <line x1="180" y1="377" x2="180" y2="415" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Want base only? branch -->
+  <text x="180" y="410" text-anchor="middle" font-size="10" fill="#64748b">Want base framework only?</text>
+
+  <!-- setup.sh box -->
+  <rect x="85" y="420" width="190" height="54" rx="12" fill="#1a2e1a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="180" y="443" text-anchor="middle" font-size="13" font-weight="700" fill="#4ade80">setup.sh</text>
+  <text x="180" y="460" text-anchor="middle" font-size="10" fill="#86efac">Path 1 · Scaffolding only</text>
+
+  <!-- ── RIGHT BRANCH: EXISTING REPO ── -->
+  <text x="720" y="203" text-anchor="middle" font-size="11" fill="#94a3b8">Legacy or active codebase</text>
+
+  <!-- EXISTING REPO box -->
+  <rect x="600" y="215" width="240" height="56" rx="12" fill="#2d1f3d" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="720" y="239" text-anchor="middle" font-size="13" font-weight="700" fill="#c084fc">📦  Existing Repo</text>
+  <text x="720" y="258" text-anchor="middle" font-size="11" fill="#94a3b8">Any language · Any state</text>
+
+  <!-- Arrow down -->
+  <line x1="720" y1="271" x2="720" y2="310" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
+
+  <!-- migrate.sh box -->
+  <rect x="610" y="315" width="220" height="62" rx="12" fill="url(#purpleGrad)" filter="url(#shadow)"/>
+  <text x="720" y="340" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">migrate.sh</text>
+  <text x="720" y="358" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.85)">--quick · --standard · --full</text>
+  <text x="720" y="370" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.7)">Path 3 · Reality-accurate</text>
+
+  <!-- Three output artifacts -->
+  <line x1="720" y1="377" x2="720" y2="415" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
+
+  <!-- Artifacts row -->
+  <rect x="598" y="420" width="244" height="54" rx="10" fill="#1a1535" stroke="#6d28d9" stroke-width="1"/>
+  <text x="720" y="438" text-anchor="middle" font-size="10" font-weight="600" fill="#a78bfa">Produces 3 artifacts</text>
+  <text x="720" y="452" text-anchor="middle" font-size="9" fill="#7c3aed">CODEBASE_ANALYSIS.md</text>
+  <text x="720" y="463" text-anchor="middle" font-size="9" fill="#7c3aed">.claude/ framework  ·  MIGRATION_PLAN.md</text>
+
+  <!-- ── MIDDLE: NO CLI ── -->
+  <rect x="310" y="330" width="280" height="90" rx="12" fill="#1c1917" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="450" y="354" text-anchor="middle" font-size="12" font-weight="700" fill="#fbbf24">💬  No CLI?</text>
+  <text x="450" y="373" text-anchor="middle" font-size="11" fill="#94a3b8">Copy the template and paste into</text>
+  <text x="450" y="390" text-anchor="middle" font-size="11" fill="#94a3b8">Claude Code or claude.ai</text>
+  <text x="334" y="408" text-anchor="middle" font-size="10" font-weight="600" fill="#f59e0b">PROMPT_TEMPLATE.md</text>
+  <text x="566" y="408" text-anchor="middle" font-size="10" font-weight="600" fill="#f59e0b">MIGRATE_TEMPLATE.md</text>
+
+  <!-- Arrows from branch labels to no-cli -->
+  <line x1="290" y1="346" x2="310" y2="360" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arrowOrange)"/>
+  <line x1="610" y1="346" x2="590" y2="360" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arrowOrange)"/>
+
+  <!-- ── BOTTOM: WHAT YOU GET ── -->
+  <line x1="60" y1="500" x2="840" y2="500" stroke="#334155" stroke-width="1"/>
+  <text x="450" y="520" text-anchor="middle" font-size="12" font-weight="600" fill="#64748b">AFTER SETUP · Open Claude Code and type</text>
+
+  <!-- Command pills -->
+  <rect x="68" y="532" width="102" height="28" rx="14" fill="#1e293b" stroke="#0ea5e9" stroke-width="1"/>
+  <text x="119" y="551" text-anchor="middle" font-size="11" font-weight="600" fill="#38bdf8">/onboard</text>
+
+  <rect x="182" y="532" width="118" height="28" rx="14" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  <text x="241" y="551" text-anchor="middle" font-size="11" font-weight="600" fill="#34d399">/plan-feature</text>
+
+  <rect x="312" y="532" width="110" height="28" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+  <text x="367" y="551" text-anchor="middle" font-size="11" font-weight="600" fill="#fbbf24">/self-review</text>
+
+  <rect x="434" y="532" width="96" height="28" rx="14" fill="#1e293b" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="482" y="551" text-anchor="middle" font-size="11" font-weight="600" fill="#a78bfa">/smart-pr</text>
+
+  <rect x="542" y="532" width="78" height="28" rx="14" fill="#1e293b" stroke="#ec4899" stroke-width="1"/>
+  <text x="581" y="551" text-anchor="middle" font-size="11" font-weight="600" fill="#f472b6">/debug</text>
+
+  <rect x="632" y="532" width="86" height="28" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+  <text x="675" y="551" text-anchor="middle" font-size="11" font-weight="600" fill="#fbbf24">/standup</text>
+
+  <rect x="730" y="532" width="102" height="28" rx="14" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  <text x="781" y="551" text-anchor="middle" font-size="11" font-weight="600" fill="#34d399">/review-pr</text>
+
+</svg>

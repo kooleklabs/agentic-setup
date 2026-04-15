@@ -40,30 +40,7 @@ A batteries-included framework that turns any codebase into an **agent-ready** w
 
 **Where do you want to start?** Pick your path:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    WHERE ARE YOU?                           │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Starting a NEW project?          Have an EXISTING repo?   │
-│         │                                  │               │
-│         ▼                                  ▼               │
-│  ┌─────────────┐                  ┌─────────────────┐      │
-│  │  generate   │                  │    migrate.sh   │      │
-│  │    .sh      │                  │                 │      │
-│  │  (Path 2)   │                  │    (Path 3)     │      │
-│  └─────────────┘                  └─────────────────┘      │
-│         │                                  │               │
-│   Want base                         Scan → generate        │
-│   framework only?                   framework + gap        │
-│         │                           report                  │
-│         ▼                                                   │
-│  ┌─────────────┐                                           │
-│  │  setup.sh   │   No CLI? → Use PROMPT_TEMPLATE.md       │
-│  │  (Path 1)   │              or MIGRATE_TEMPLATE.md      │
-│  └─────────────┘                                           │
-└─────────────────────────────────────────────────────────────┘
-```
+![Start here decision flow](./docs/infographic-start-here.svg)
 
 > **Prerequisites:** `bash`, `git`, and [Claude Code](https://docs.claude.com/en/docs/claude-code) installed.
 
@@ -157,44 +134,7 @@ Open [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md), copy the prompt, fill in your
 
 Once the framework is installed, **this is how you use it day to day:**
 
-```
-╔══════════════════════════════════════════════════════════════╗
-║                    DAILY WORKFLOW                           ║
-╠══════════════════════════════════════════════════════════════╣
-║                                                             ║
-║  START OF DAY                                               ║
-║  ├── New session or fresh clone?  →  /onboard              ║
-║  └── Already oriented?            →  /standup              ║
-║                                                             ║
-║  PLANNING                                                   ║
-║  ├── New feature or change?       →  /plan-feature         ║
-║  └── Significant decision made?   →  /adr                  ║
-║                                                             ║
-║  BUILDING  (agents do the work)                            ║
-║  ├── Backend work                 →  api-engineer          ║
-║  ├── Frontend work                →  frontend-engineer     ║
-║  ├── Infrastructure               →  devops-engineer       ║
-║  └── Tests                        →  test-engineer         ║
-║                                                             ║
-║  WHEN THINGS BREAK                                          ║
-║  └── Error / failing test?        →  /debug                ║
-║                                                             ║
-║  BEFORE COMMITTING                                          ║
-║  ├── Run checks                   →  /self-review          ║
-║  └── API surface changed?         →  /check-contracts      ║
-║                                                             ║
-║  SHIPPING                                                   ║
-║  ├── Write PR description         →  /smart-pr             ║
-║  └── Final code review            →  /review-pr            ║
-║                                                             ║
-╚══════════════════════════════════════════════════════════════╝
-```
-
-**The golden path for any feature:**
-
-```
-/plan-feature  →  agent builds  →  /self-review  →  /smart-pr  →  /review-pr
-```
+![Daily workflow](./docs/infographic-daily-workflow.svg)
 
 ---
 
