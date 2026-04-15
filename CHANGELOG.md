@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] — 2026-04-15
+
+### Added
+
+**GitHub Copilot CLI support**
+- New `--target` flag for `init`, `generate`, and `migrate` commands
+  - `--target claude` — Claude Code artifacts only (original behavior)
+  - `--target copilot` — Copilot CLI artifacts + shared files (CLAUDE.md, .mcp.json)
+  - `--target both` — both Claude Code and Copilot CLI artifacts (new default)
+- `AGENTS.md` — aggregated agent definitions at repo root, read by Copilot CLI
+- `.github/copilot-instructions.md` — project-level Copilot instructions with workflow guidance
+- `.github/instructions/*.instructions.md` — 5 skill instruction files (coding-standards, api-design, testing, security-review, design-system)
+- `generate` prompt now instructs Claude to also create Copilot artifacts when target includes copilot
+- `migrate` Phase 2 extended with Copilot artifact generation
+
+### Changed
+- Default target changed from Claude-only to `both` — existing users get Copilot support automatically
+- README updated with Copilot CLI badge, `--target` documentation, multi-agent mention
+- package.json description and keywords updated for discoverability
+
 ## [1.1.0] — 2026-04-15
 
 ### Added
