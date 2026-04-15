@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 /**
  * @kooleklabs/agentic-app
- * Thin Node CLI that dispatches to the bundled bash scripts.
- * Scripts run in the user's current working directory.
+ *
+ * CLI router:
+ *   init, setup, migrate  → bundled bash scripts (unchanged)
+ *   generate              → Node implementation using Claude Agent SDK
+ *                           (pass --legacy to use the old bash generate.sh)
  */
 
 const { spawnSync } = require('node:child_process');
@@ -11,11 +14,11 @@ const fs = require('node:fs');
 
 const PKG_ROOT = path.resolve(__dirname, '..');
 
-const SCRIPTS = {
+const BASH_SCRIPTS = {
   init: 'setup.sh',
   setup: 'setup.sh',
-  generate: 'generate.sh',
   migrate: 'migrate.sh',
+  // `generate` default = Node. bash generate.sh is only via --legacy.
 };
 
 const ALIASES = {
@@ -37,6 +40,7 @@ Commands:
   generate [options]          Generate a customized framework from a requirement
     --from <file>             Document (.md, .txt, .docx, .pdf) — pandoc/pdftotext may be required
     --idea "<text>"           Describe the project inline
+    --legacy                  Use the bash generate.sh path (no Agent SDK)
 
   migrate [options]           Install framework tuned to an existing codebase
     --dir <path>              Target directory (default: cwd)
@@ -49,15 +53,48 @@ Examples:
   npx @kooleklabs/agentic-app generate --idea "Next.js + Go Fiber + Postgres"
   npx @kooleklabs/agentic-app migrate --dir ./legacy-api
 
-Docs: https://github.com/KoolekLabs/agentic-setup
+Docs: https://github.com/kooleklabs/agentic-setup
 `;
 
-function main() {
+function runBashScript(scriptName, args) {
+  const scriptPath = path.join(PKG_ROOT, scriptName);
+  if (!fs.existsSync(scriptPath)) {
+    console.error(`Missing bundled script: ${scriptPath}`);
+    console.error('Try reinstalling: npm install -g @kooleklabs/agentic-app');
+    process.exit(1);
+  }
+  const result = spawnSync('bash', [scriptPath, ...args], {
+    stdio: 'inherit',
+    cwd: process.cwd(),
+    env: process.env,
+  });
+  if (result.error) {
+    if (result.error.code === 'ENOENT') {
+      console.error('bash is required but not found on PATH.');
+    } else {
+      console.error(result.error.message);
+    }
+    process.exit(1);
+  }
+  process.exit(result.status ?? 1);
+}
+
+async function runGenerate(args) {
+  if (args.includes('--legacy')) {
+    const filtered = args.filter((a) => a !== '--legacy');
+    return runBashScript('generate.sh', filtered);
+  }
+  const { main } = require(path.join(PKG_ROOT, 'lib', 'generate.js'));
+  const code = await main(args);
+  process.exit(code ?? 0);
+}
+
+async function main() {
   const [, , rawCmd, ...args] = process.argv;
 
   if (!rawCmd || rawCmd === '--help' || rawCmd === '-h' || rawCmd === 'help') {
     console.log(HELP.trim());
-    process.exit(rawCmd ? 0 : 0);
+    process.exit(0);
   }
 
   if (rawCmd === '--version' || rawCmd === '-v' || rawCmd === 'version') {
@@ -67,37 +104,22 @@ function main() {
   }
 
   const cmd = ALIASES[rawCmd] || rawCmd;
-  const scriptName = SCRIPTS[cmd];
 
+  if (cmd === 'generate') {
+    return runGenerate(args);
+  }
+
+  const scriptName = BASH_SCRIPTS[cmd];
   if (!scriptName) {
     console.error(`Unknown command: ${rawCmd}\n`);
     console.log(HELP.trim());
     process.exit(1);
   }
 
-  const scriptPath = path.join(PKG_ROOT, scriptName);
-  if (!fs.existsSync(scriptPath)) {
-    console.error(`Missing bundled script: ${scriptPath}`);
-    console.error('Try reinstalling: npm install -g @kooleklabs/agentic-app');
-    process.exit(1);
-  }
-
-  const result = spawnSync('bash', [scriptPath, ...args], {
-    stdio: 'inherit',
-    cwd: process.cwd(),
-    env: process.env,
-  });
-
-  if (result.error) {
-    if (result.error.code === 'ENOENT') {
-      console.error('bash is required but not found on PATH.');
-    } else {
-      console.error(result.error.message);
-    }
-    process.exit(1);
-  }
-
-  process.exit(result.status ?? 1);
+  return runBashScript(scriptName, args);
 }
 
-main();
+main().catch((err) => {
+  console.error(err && err.stack ? err.stack : err);
+  process.exit(1);
+});

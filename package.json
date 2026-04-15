@@ -33,6 +33,7 @@
   },
   "files": [
     "bin/",
+    "lib/",
     "scripts/",
     "setup.sh",
     "generate.sh",
@@ -42,11 +43,14 @@
     "README.md",
     "LICENSE"
   ],
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.109"
+  },
   "os": [
     "darwin",
     "linux"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   }
 }
