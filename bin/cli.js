@@ -47,7 +47,9 @@ Commands:
   migrate [options]           Install framework tuned to an existing codebase
     --dir <path>              Target directory (default: cwd)
     --quick                   Quick scan — manifests + README only
+    --standard                Standard depth (default)
     --full                    Full audit — 20+ files, CI, infra
+    --from-analysis <file>    Resume from an existing scan (skip Phase 1)
 
 Examples:
   npx @kooleklabs/agentic-app init

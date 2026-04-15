@@ -41,6 +41,13 @@ A batteries-included framework that turns **any codebase into an agent-ready wor
 
 ![Framework overview](./docs/framework-overview.png)
 
+<details>
+<summary><b>Start here flowchart</b> (click to expand)</summary>
+
+![Start here](./docs/infographic-start-here.svg)
+
+</details>
+
 > **Prerequisites:** Node.js ≥18 and [Claude Code](https://docs.claude.com/en/docs/claude-code) logged in. `pandoc` or `pdftotext` only needed if you feed `.docx` / `.pdf`.
 
 ```bash
@@ -120,6 +127,9 @@ npx @kooleklabs/agentic-app generate
 # Pause for clarifying questions when Claude asks
 npx @kooleklabs/agentic-app generate --from spec.md --interactive
 
+# Override the model (default: claude-sonnet-4-6)
+npx @kooleklabs/agentic-app generate --from spec.md --model claude-opus-4-6
+
 # Use the legacy bash flow (no Agent SDK)
 npx @kooleklabs/agentic-app generate --from spec.md --legacy
 ```
@@ -139,6 +149,9 @@ npx @kooleklabs/agentic-app migrate
 
 # Quick — manifests + README only
 npx @kooleklabs/agentic-app migrate --quick
+
+# Standard depth (explicit — this is the default)
+npx @kooleklabs/agentic-app migrate --standard
 
 # Full audit — 20+ files, CI configs, infra
 npx @kooleklabs/agentic-app migrate --full
@@ -231,6 +244,8 @@ CLAUDE_PRICE_INPUT=2.5 CLAUDE_PRICE_OUTPUT=12 npx @kooleklabs/agentic-app genera
 ---
 
 ## 🗓 Daily workflow
+
+![Daily workflow](./docs/infographic-daily-workflow.svg)
 
 Once the framework is installed, slash commands inside Claude Code drive your daily work:
 
@@ -423,6 +438,9 @@ You need access to Claude Code (any plan that includes it). The Agent SDK used u
 - **v2.1** — `--interactive` flag pauses for clarifying questions; session continues via the SDK's `continue` mode.
 - **v2.2** — `migrate` gets the same SDK treatment through a shared runner.
 - **v2.3** — Token + estimated USD cost printed at the end of every run.
+- **v2.3.2** — SDK passes `ENABLE_SECURITY_REMINDER=0` so security-guidance plugin no longer interferes.
+- **v2.3.4** — `canUseTool` override defeats `.claude/` hardcoded write protection.
+- **v2.3.5** — Default model is now `claude-sonnet-4-6`; new `--model` flag to override per run.
 - **`--legacy`** — still available on `generate` if you want the old bash path for comparison.
 
 </details>
