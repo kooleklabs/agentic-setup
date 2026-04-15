@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * @kooleklabs/create-agentic-app
+ * @kooleklabs/agentic-app
  * Thin Node CLI that dispatches to the bundled bash scripts.
  * Scripts run in the user's current working directory.
  */
@@ -28,7 +28,7 @@ const HELP = `
 Universal Agentic Development Framework
 
 Usage:
-  npx @kooleklabs/create-agentic-app <command> [options]
+  npx @kooleklabs/agentic-app <command> [options]
 
 Commands:
   init, setup                 Install base framework in the current directory
@@ -44,10 +44,10 @@ Commands:
     --full                    Full audit — 20+ files, CI, infra
 
 Examples:
-  npx @kooleklabs/create-agentic-app init
-  npx @kooleklabs/create-agentic-app generate --from proposal.docx
-  npx @kooleklabs/create-agentic-app generate --idea "Next.js + Go Fiber + Postgres"
-  npx @kooleklabs/create-agentic-app migrate --dir ./legacy-api
+  npx @kooleklabs/agentic-app init
+  npx @kooleklabs/agentic-app generate --from proposal.docx
+  npx @kooleklabs/agentic-app generate --idea "Next.js + Go Fiber + Postgres"
+  npx @kooleklabs/agentic-app migrate --dir ./legacy-api
 
 Docs: https://github.com/KoolekLabs/agentic-setup
 `;
@@ -78,7 +78,7 @@ function main() {
   const scriptPath = path.join(PKG_ROOT, scriptName);
   if (!fs.existsSync(scriptPath)) {
     console.error(`Missing bundled script: ${scriptPath}`);
-    console.error('Try reinstalling: npm install -g @kooleklabs/create-agentic-app');
+    console.error('Try reinstalling: npm install -g @kooleklabs/agentic-app');
     process.exit(1);
   }
 

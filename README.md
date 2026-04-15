@@ -50,10 +50,10 @@ A batteries-included framework that turns any codebase into an **agent-ready** w
 cd your-project
 
 # Recommended — via npx (no clone, no curl, auto-updates)
-npx @kooleklabs/create-agentic-app init
+npx @kooleklabs/agentic-app init
 
 # Interactive — prompts for project name, stack, and conventions
-npx @kooleklabs/create-agentic-app init --interactive
+npx @kooleklabs/agentic-app init --interactive
 ```
 
 <details>
@@ -82,14 +82,14 @@ Feed Claude a PRD, spec, or one-liner idea. It generates the full framework with
 cd your-project
 
 # From a document
-npx @kooleklabs/create-agentic-app generate --from /path/to/proposal.docx
-npx @kooleklabs/create-agentic-app generate --from /path/to/requirements.md
+npx @kooleklabs/agentic-app generate --from /path/to/proposal.docx
+npx @kooleklabs/agentic-app generate --from /path/to/requirements.md
 
 # From an inline idea
-npx @kooleklabs/create-agentic-app generate --idea "Ride-hailing app with Go Fiber and PostgreSQL"
+npx @kooleklabs/agentic-app generate --idea "Ride-hailing app with Go Fiber and PostgreSQL"
 
 # Interactive — paste your requirement when prompted
-npx @kooleklabs/create-agentic-app generate
+npx @kooleklabs/agentic-app generate
 ```
 
 <details>
@@ -123,19 +123,19 @@ Already have a project? `migrate` analyzes your repo, generates a framework that
 cd your-project
 
 # Standard depth (recommended)
-npx @kooleklabs/create-agentic-app migrate
+npx @kooleklabs/agentic-app migrate
 
 # Quick — manifests + README only
-npx @kooleklabs/create-agentic-app migrate --quick
+npx @kooleklabs/agentic-app migrate --quick
 
 # Full audit — 20+ files, CI configs, infra
-npx @kooleklabs/create-agentic-app migrate --full
+npx @kooleklabs/agentic-app migrate --full
 
 # Target a specific directory
-npx @kooleklabs/create-agentic-app migrate --dir /path/to/your/repo
+npx @kooleklabs/agentic-app migrate --dir /path/to/your/repo
 
 # Resume from an existing scan
-npx @kooleklabs/create-agentic-app migrate --from-analysis CODEBASE_ANALYSIS.md
+npx @kooleklabs/agentic-app migrate --from-analysis CODEBASE_ANALYSIS.md
 ```
 
 **Three durable artifacts — review each before the next phase runs:**
@@ -254,7 +254,7 @@ your-project/
 <summary><b>E-commerce platform</b></summary>
 
 ```bash
-npx @kooleklabs/create-agentic-app generate --idea "E-commerce platform for Malaysian SMEs with product catalog, \
+npx @kooleklabs/agentic-app generate --idea "E-commerce platform for Malaysian SMEs with product catalog, \
 shopping cart, Stripe payments, order management, and delivery tracking. \
 Stack: Next.js + Go Fiber + PostgreSQL + Redis. Deploy on AWS."
 ```
@@ -265,7 +265,7 @@ Stack: Next.js + Go Fiber + PostgreSQL + Redis. Deploy on AWS."
 <summary><b>Mobile fitness app</b></summary>
 
 ```bash
-npx @kooleklabs/create-agentic-app generate --from /path/to/fitness-app-prd.md
+npx @kooleklabs/agentic-app generate --from /path/to/fitness-app-prd.md
 ```
 
 </details>
@@ -274,7 +274,7 @@ npx @kooleklabs/create-agentic-app generate --from /path/to/fitness-app-prd.md
 <summary><b>Internal enterprise tool</b></summary>
 
 ```bash
-npx @kooleklabs/create-agentic-app generate --idea "Internal HR management system with leave tracking, payroll \
+npx @kooleklabs/agentic-app generate --idea "Internal HR management system with leave tracking, payroll \
 calculation, and employee directory. Stack: Laravel + Vue.js + MySQL. \
 Deploy on company K3s cluster."
 ```
@@ -285,7 +285,7 @@ Deploy on company K3s cluster."
 <summary><b>Legacy Django REST API migration</b></summary>
 
 ```bash
-npx @kooleklabs/create-agentic-app migrate --dir /path/to/your/django-api
+npx @kooleklabs/agentic-app migrate --dir /path/to/your/django-api
 ```
 
 See the full scenario in [`examples/legacy-django-api.md`](./examples/legacy-django-api.md).
@@ -293,7 +293,7 @@ See the full scenario in [`examples/legacy-django-api.md`](./examples/legacy-dja
 </details>
 
 Working requirement files live in [`examples/`](./examples):
-- New project: `npx @kooleklabs/create-agentic-app generate --from ./examples/ecommerce-sme.md`
+- New project: `npx @kooleklabs/agentic-app generate --from ./examples/ecommerce-sme.md`
 - Existing project: see `examples/legacy-django-api.md` *(point `--dir` at your actual repo)*
 
 ---

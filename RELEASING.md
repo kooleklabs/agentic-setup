@@ -55,11 +55,11 @@ npm forbids re-publishing the same version. If `v1.2.3` shipped broken:
 
 ```bash
 # Option A — deprecate and release a fix
-npm deprecate @kooleklabs/create-agentic-app@1.2.3 "Broken; use 1.2.4"
+npm deprecate @kooleklabs/agentic-app@1.2.3 "Broken; use 1.2.4"
 npm run release:patch   # publishes 1.2.4
 
 # Option B — unpublish (only within 72 hours, and breaks anyone already depending on it)
-npm unpublish @kooleklabs/create-agentic-app@1.2.3
+npm unpublish @kooleklabs/agentic-app@1.2.3
 ```
 
 Prefer Option A.
