@@ -11,13 +11,13 @@
     "framework",
     "create-app"
   ],
-  "homepage": "https://github.com/KoolekLabs/agentic-setup#readme",
+  "homepage": "https://github.com/kooleklabs/agentic-setup#readme",
   "bugs": {
-    "url": "https://github.com/KoolekLabs/agentic-setup/issues"
+    "url": "https://github.com/kooleklabs/agentic-setup/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KoolekLabs/agentic-setup.git"
+    "url": "git+https://github.com/kooleklabs/agentic-setup.git"
   },
   "license": "MIT",
   "author": "KoolekLabs",
