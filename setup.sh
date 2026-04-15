@@ -1543,13 +1543,23 @@ cat > .claude/settings.json << 'EOF'
     "PreToolUse": [
       {
         "matcher": "Bash(git commit*)",
-        "command": ".claude/hooks/pre-commit.sh"
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-commit.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": ".claude/hooks/post-edit.sh \"$TOOL_INPUT_path\""
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/post-edit.sh \"$TOOL_INPUT_path\""
+          }
+        ]
       }
     ]
   }
@@ -1561,10 +1571,7 @@ log_create "settings.json"
 cat > .claude/settings.local.json << 'EOF'
 {
   "_comment": "Personal overrides — this file is git-ignored",
-  "model": {
-    "default": "sonnet",
-    "planning": "opus"
-  }
+  "model": "claude-sonnet-4-6"
 }
 EOF
 log_create "settings.local.json (git-ignored)"
