@@ -57,16 +57,17 @@
   <line x1="675" y1="0" x2="675" y2="580" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
 
   <!-- Header -->
-  <text x="450" y="46" text-anchor="middle" font-size="22" font-weight="700" fill="#f8fafc" letter-spacing="0.5">Universal Agentic Development Framework</text>
-  <text x="450" y="72" text-anchor="middle" font-size="13" fill="#94a3b8" letter-spacing="1">WHERE DO YOU WANT TO START?</text>
+  <text x="450" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#f8fafc" letter-spacing="0.5">Universal Agentic Development Framework</text>
+  <text x="450" y="58" text-anchor="middle" font-size="12" fill="#38bdf8" font-weight="600" font-family="'SF Mono','Menlo','Monaco',monospace">npx @kooleklabs/agentic-app &lt;command&gt;</text>
+  <text x="450" y="78" text-anchor="middle" font-size="11" fill="#94a3b8" letter-spacing="1.5">PICK YOUR PATH  ·  BASED ON YOUR SITUATION</text>
 
   <!-- Divider -->
   <line x1="60" y1="85" x2="840" y2="85" stroke="#334155" stroke-width="1"/>
 
   <!-- ── START NODE ── -->
-  <rect x="300" y="105" width="300" height="52" rx="26" fill="url(#tealGrad)" filter="url(#glowBlue)"/>
-  <text x="450" y="127" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">Pick your path</text>
-  <text x="450" y="146" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.8)">based on your situation</text>
+  <rect x="300" y="110" width="300" height="52" rx="26" fill="url(#tealGrad)" filter="url(#glowBlue)"/>
+  <text x="450" y="132" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">cd your-project</text>
+  <text x="450" y="151" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.85)" font-family="'SF Mono','Menlo','Monaco',monospace">then pick one of the three commands below</text>
 
   <!-- Arrow down from start, splits to left and right -->
   <!-- Left arrow -->
@@ -86,11 +87,11 @@
   <!-- Arrow down -->
   <line x1="180" y1="271" x2="180" y2="310" stroke="#0ea5e9" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
 
-  <!-- generate.sh box -->
+  <!-- agentic-app generate box -->
   <rect x="70" y="315" width="220" height="62" rx="12" fill="url(#greenGrad)" filter="url(#glowGreen)"/>
-  <text x="180" y="340" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">generate.sh</text>
-  <text x="180" y="358" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.85)">--idea "..." · --from file.md</text>
-  <text x="180" y="370" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.7)">Path 2 · Recommended</text>
+  <text x="180" y="339" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">agentic-app generate</text>
+  <text x="180" y="355" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.85)">--from file  ·  --idea "…"  ·  -i</text>
+  <text x="180" y="369" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.7)">Recommended  ·  Agent SDK + live stream</text>
 
   <!-- Arrow down from generate.sh -->
   <line x1="180" y1="377" x2="180" y2="415" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
@@ -98,10 +99,10 @@
   <!-- Want base only? branch -->
   <text x="180" y="410" text-anchor="middle" font-size="10" fill="#64748b">Want base framework only?</text>
 
-  <!-- setup.sh box -->
+  <!-- agentic-app init box -->
   <rect x="85" y="420" width="190" height="54" rx="12" fill="#1a2e1a" stroke="#22c55e" stroke-width="1.5"/>
-  <text x="180" y="443" text-anchor="middle" font-size="13" font-weight="700" fill="#4ade80">setup.sh</text>
-  <text x="180" y="460" text-anchor="middle" font-size="10" fill="#86efac">Path 1 · Scaffolding only</text>
+  <text x="180" y="443" text-anchor="middle" font-size="13" font-weight="700" fill="#4ade80">agentic-app init</text>
+  <text x="180" y="460" text-anchor="middle" font-size="10" fill="#86efac">Scaffolding only  ·  no LLM call</text>
 
   <!-- ── RIGHT BRANCH: EXISTING REPO ── -->
   <text x="720" y="203" text-anchor="middle" font-size="11" fill="#94a3b8">Legacy or active codebase</text>
@@ -114,11 +115,11 @@
   <!-- Arrow down -->
   <line x1="720" y1="271" x2="720" y2="310" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
 
-  <!-- migrate.sh box -->
+  <!-- agentic-app migrate box -->
   <rect x="610" y="315" width="220" height="62" rx="12" fill="url(#purpleGrad)" filter="url(#shadow)"/>
-  <text x="720" y="340" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">migrate.sh</text>
-  <text x="720" y="358" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.85)">--quick · --standard · --full</text>
-  <text x="720" y="370" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.7)">Path 3 · Reality-accurate</text>
+  <text x="720" y="339" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">agentic-app migrate</text>
+  <text x="720" y="355" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.85)">--quick  ·  --standard  ·  --full</text>
+  <text x="720" y="369" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.7)">Reality-accurate  ·  + MIGRATION_PLAN.md</text>
 
   <!-- Three output artifacts -->
   <line x1="720" y1="377" x2="720" y2="415" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
