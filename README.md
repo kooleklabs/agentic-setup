@@ -2,7 +2,7 @@
 
 # Universal Agentic Development Framework
 
-**Drop into any project. One command, one prompt. Ship with AI agents.**
+**Drop into any project — new or existing. One command, one prompt. Ship with AI agents.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-5B3FFF.svg)](https://docs.claude.com/en/docs/claude-code)
@@ -11,6 +11,7 @@
 [![Maintained](https://img.shields.io/badge/maintained-yes-success.svg)](https://github.com/KoolekLabs/agentic-setup/commits/main)
 
 [Quick start](#quick-start) •
+[Existing codebases](#existing-codebases) •
 [How it works](#how-it-works) •
 [Architecture](#the-7-layer-architecture) •
 [Examples](#examples) •
@@ -26,6 +27,7 @@
 A batteries-included framework that turns any codebase into an **agent-ready** workspace. It ships the scaffolding — agents, skills, commands, hooks, and guardrails — so Claude Code can plan, build, test, and review alongside you from day one.
 
 - **Universal** — works with any stack (Next.js, Go, Laravel, Rails, Django, …)
+- **Greenfield or existing** — spin up a new project OR migrate a legacy codebase with a gap report and phased plan
 - **Opinionated defaults** — plan-first workflow, structured commits, test-before-ship
 - **Progressive** — start solo, scale to multi-agent teams when you need throughput
 - **Transparent** — every agent, skill, and hook is a plain Markdown file you can read and edit
@@ -64,6 +66,41 @@ KoolekLabs/agentic-setup/main/setup.sh | bash
 
 ---
 
+## Existing codebases
+
+Already have a project? `migrate.sh` analyzes your repo, generates a reality-accurate framework, and produces a prioritized gap report — no big-bang rewrite required.
+
+```bash
+# Standard depth (recommended) — samples source files to detect real patterns
+bash migrate.sh
+
+# Quick — manifests + README only
+bash migrate.sh --quick
+
+# Full audit — 20+ files, CI configs, infra
+bash migrate.sh --full
+
+# Target a specific directory
+bash migrate.sh --dir /path/to/your/repo
+
+# Resume from an existing analysis (skip Phase 1)
+bash migrate.sh --from-analysis CODEBASE_ANALYSIS.md
+```
+
+**What it produces:**
+
+| Artifact | What it is |
+|----------|-----------|
+| `CODEBASE_ANALYSIS.md` | Detected stack, commands, patterns, deliberate conventions |
+| `.claude/` | Reality-accurate framework — CLAUDE.md reflects what code does today, not ideals |
+| `MIGRATION_PLAN.md` | Gap report (CRITICAL → LOW) + phased roadmap with quick wins first |
+
+> No CLI? Copy [`MIGRATE_TEMPLATE.md`](./MIGRATE_TEMPLATE.md) and paste into claude.ai with your files attached.
+
+See [`examples/legacy-django-api.md`](./examples/legacy-django-api.md) for a full walkthrough on a real-world legacy codebase.
+
+---
+
 ## How it works
 
 Pick the path that matches your workflow. Expand each panel for details.
@@ -81,7 +118,7 @@ Use this when you want the scaffolding now and will add domain skills manually l
 </details>
 
 <details open>
-<summary><b>Path 2 — Auto-generate from a requirement</b> &nbsp;·&nbsp; <i>recommended</i></summary>
+<summary><b>Path 2 — Auto-generate from a requirement</b> &nbsp;·&nbsp; <i>recommended for new projects</i></summary>
 
 Feed Claude a PRD, spec, or one-liner idea and it builds the entire framework plus domain-specific skills, agents, and configs.
 
@@ -101,13 +138,24 @@ bash generate.sh
 </details>
 
 <details>
-<summary><b>Path 3 — Prompt in Claude Code or claude.ai</b> &nbsp;·&nbsp; <i>no CLI needed</i></summary>
+<summary><b>Path 3 — Migrate an existing codebase</b> &nbsp;·&nbsp; <i>reality-accurate setup + gap report</i></summary>
 
-1. Open [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md)
-2. Copy the prompt
-3. Replace `[PASTE YOUR REQUIREMENT HERE]` with your actual requirement
-4. Paste into Claude Code CLI or claude.ai chat
-5. Claude generates everything inline
+```bash
+bash migrate.sh               # Scan → generate framework → gap report
+bash migrate.sh --quick       # Surface scan only (manifests + README)
+bash migrate.sh --full        # Deep audit (20+ files, CI, infra)
+```
+
+Three durable artifacts are produced — review and edit each before the next phase runs. Use `--from-analysis` to resume from a saved scan.
+
+</details>
+
+<details>
+<summary><b>Path 4 — Prompt in Claude Code or claude.ai</b> &nbsp;·&nbsp; <i>no CLI needed</i></summary>
+
+**New project:** Open [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md), copy the prompt, fill in your requirement, paste into Claude Code or claude.ai.
+
+**Existing project:** Open [`MIGRATE_TEMPLATE.md`](./MIGRATE_TEMPLATE.md), fill in the four fields at the bottom, paste with your key files attached.
 
 </details>
 
@@ -208,7 +256,20 @@ Deploy on company K3s cluster."
 
 </details>
 
-Working requirement files live in [`examples/`](./examples) — try `bash generate.sh --from examples/ecommerce-sme.md` to see the generator end-to-end.
+<details>
+<summary><b>Legacy Django REST API migration</b></summary>
+
+```bash
+bash migrate.sh --standard --dir /path/to/your/django-api
+```
+
+See the full scenario (pain points, expected output, phase-by-phase breakdown) in [`examples/legacy-django-api.md`](./examples/legacy-django-api.md).
+
+</details>
+
+Working requirement files live in [`examples/`](./examples):
+- New project: `bash generate.sh --from examples/ecommerce-sme.md`
+- Existing project: `bash migrate.sh --from examples/legacy-django-api.md` *(as a reference — point `--dir` at your actual repo)*
 
 ---
 
@@ -236,7 +297,6 @@ EOF
 Install directly inside Claude Code:
 
 ```text
-/plugin install dev-workflows@claude-code-workflows
 /plugin install comprehensive-review
 /plugin install security-scanning
 ```
@@ -262,7 +322,9 @@ You need access to Claude Code — any plan that includes it will work. Higher s
 <details>
 <summary><b>Can I use this on an existing codebase?</b></summary>
 
-Yes. Run `setup.sh` in the repo root. It will not overwrite existing files; it creates the `.claude/` scaffolding and a starter `CLAUDE.md` for you to edit.
+Yes — and there's a dedicated path for it. Run `migrate.sh` instead of `setup.sh`. It scans your repo, generates a framework that reflects what your code actually does today (not aspirational guardrails), and produces a `MIGRATION_PLAN.md` with a prioritized gap report and phased roadmap.
+
+Key difference from `setup.sh`: the generated CLAUDE.md describes your current reality. Gaps between current state and best practices are surfaced in `MIGRATION_PLAN.md` rather than baked into guardrails the codebase can't follow yet.
 
 </details>
 
