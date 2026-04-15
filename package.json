@@ -1,6 +1,6 @@
 {
   "name": "@kooleklabs/agentic-app",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Drop into any project — one command installs an agent-ready Claude Code framework with plan-first workflows, skills, hooks, and guardrails.",
   "keywords": [
     "claude",
