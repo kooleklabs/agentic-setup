@@ -159,8 +159,9 @@ cat >> CLAUDE.md << 'CLAUDEMD'
 - Large changes broken into phases, each leaving codebase working
 
 ## 6. Verification protocol
-- Run full test suite before considering any task complete
-- Run linter before committing
+- Run /self-review before every commit — tests → lint → security, fix each before moving on
+- Loop until all checks are green — never commit with failing tests or lint errors
+- Never use --no-verify to bypass hooks
 - For API changes: verify contracts match the spec
 - For DB changes: verify migrations run up AND down
 - Never commit secrets, API keys, or credentials
@@ -311,8 +312,10 @@ You are a senior backend engineer. Your workflow:
 2. FOLLOW existing patterns, do not invent new ones
 3. IMPLEMENT with proper error handling and input validation
 4. WRITE or update tests for your changes
-5. RUN test suite and fix failures
-6. RUN linter and fix issues
+5. LOOP until clean:
+   - Run test suite → fix failures → re-run
+   - Run linter → fix issues → re-run
+6. RUN /self-review before committing
 
 ## Rules
 - Check CLAUDE.md section 3 before starting
@@ -343,7 +346,11 @@ You are a senior frontend engineer. Your workflow:
 3. IMPLEMENT components that match the approved design pixel-perfect
 4. ENSURE accessibility: ARIA labels, keyboard nav, contrast ratios
 5. WRITE component tests (rendering, interaction, edge cases)
-6. VERIFY responsive behavior at mobile/tablet/desktop widths
+6. LOOP until clean:
+   - Run tests → fix failures → re-run
+   - Run linter → fix issues → re-run
+7. VERIFY responsive behavior at mobile/tablet/desktop widths
+8. RUN /self-review before committing
 
 ## Rules
 - Design-system skill overrides your defaults — follow it exactly
@@ -711,6 +718,48 @@ log_create "design-system/SKILL.md (customize per project)"
 # ============================================================
 log_step "Creating commands..."
 
+# --- /self-review (UNIVERSAL) ---
+cat > .claude/commands/self-review.md << 'EOF'
+---
+description: Run a full self-review-and-fix loop on the current changes. Checks tests, lint, and security — fixing each issue before moving to the next. Run before every commit or PR.
+---
+
+Run a self-review-and-fix loop on the current working changes:
+
+## Step 1 — Tests
+1. Detect and run the project test suite (check package.json, go.mod, Cargo.toml, pytest)
+2. If tests fail:
+   - Read each failure carefully
+   - Fix the root cause (not the test)
+   - Re-run until all pass
+3. If no test suite exists: flag as a gap, continue
+
+## Step 2 — Lint
+1. Detect and run the project linter
+2. If lint errors found:
+   - Fix each error
+   - Re-run until clean
+3. If no linter configured: flag as a gap, continue
+
+## Step 3 — Security spot-check
+1. Delegate to the security-reviewer agent for any changed files
+2. For CRITICAL or HIGH findings: fix immediately, re-check
+3. For MEDIUM/LOW: log for follow-up, do not block
+
+## Step 4 — Report
+Summarise the outcome:
+- ✅ All checks passed — safe to commit
+- ⚠️ Gaps found (no tests / no linter) — list them
+- ❌ Unresolved issues — list what remains and why it was not fixed
+
+## Rules
+- Never use --no-verify or skip a check to make it "pass"
+- Fix root causes, not symptoms
+- If a fix introduces a new failure, loop again
+- Loop exits only when all checks are green or explicitly deferred with a reason
+EOF
+log_create "self-review.md (universal)"
+
 # --- /review-pr (UNIVERSAL) ---
 cat > .claude/commands/review-pr.md << 'EOF'
 ---
@@ -969,7 +1018,7 @@ echo -e "  ├── .mcp.json              ${YELLOW}← add your MCP servers${N
 echo -e "  ├── .claude/"
 echo -e "  │   ├── agents/            (6 agents: 3 universal + 3 customizable)"
 echo -e "  │   ├── skills/            (5 skills: 4 universal + 1 customizable)"
-echo -e "  │   ├── commands/          (3 universal commands)"
+echo -e "  │   ├── commands/          (4 universal commands)"
 echo -e "  │   ├── hooks/             (2 universal hooks)"
 echo -e "  │   └── settings.json"
 echo -e "  └── contracts/"

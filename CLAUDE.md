@@ -44,8 +44,9 @@
 - Large changes broken into phases, each leaving codebase working
 
 ## 6. Verification protocol
-- Run full test suite before considering any task complete
-- Run linter before committing
+- Run /self-review before every commit — tests → lint → security, fix each before moving on
+- Loop until all checks are green — never commit with failing tests or lint errors
+- Never use --no-verify to bypass hooks
 - For API changes: verify contracts match the spec
 - For DB changes: verify migrations run up AND down
 - Never commit secrets, API keys, or credentials

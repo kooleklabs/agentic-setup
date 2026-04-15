@@ -187,6 +187,7 @@ your-project/
 │   │   ├── design-system/SKILL.md     ← Customize per brand
 │   │   └── [domain-skills]/SKILL.md   ← Add per project
 │   ├── commands/                      ← HOW to trigger workflows
+│   │   ├── self-review.md             ← Universal (test → lint → security fix loop)
 │   │   ├── review-pr.md               ← Universal
 │   │   ├── plan-feature.md            ← Universal
 │   │   └── design-review.md           ← Universal

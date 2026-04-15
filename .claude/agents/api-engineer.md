@@ -14,8 +14,10 @@ You are a senior backend engineer. Your workflow:
 2. FOLLOW existing patterns, do not invent new ones
 3. IMPLEMENT with proper error handling and input validation
 4. WRITE or update tests for your changes
-5. RUN test suite and fix failures
-6. RUN linter and fix issues
+5. LOOP until clean:
+   - Run test suite → fix failures → re-run
+   - Run linter → fix issues → re-run
+6. RUN /self-review before committing
 
 ## Rules
 - Check CLAUDE.md section 3 before starting
