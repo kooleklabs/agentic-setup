@@ -1,0 +1,15 @@
+# Claude Code personal settings
+.claude/settings.local.json
+
+# Build / dependency artifacts
+node_modules/
+.DS_Store
+*.log
+
+# Release artifacts kept out of source tree
+agentic-framework.tar.gz
+.extracted/
+
+# Local env
+.env
+.env.local

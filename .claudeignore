@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.venv/
+vendor/
+go/pkg/
+target/
+__pycache__/
+*.pyc
+
+# Build artifacts
+dist/
+build/
+.next/
+out/
+*.min.js
+*.min.css
+*.map
+
+# Generated
+coverage/
+.nyc_output/
+*.lock
+
+# Assets (binary)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+tmp/
+temp/
+.cache/
+.docker/

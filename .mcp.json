@@ -1,0 +1,19 @@
+{
+  "_comment": "MCP servers — customize URLs and credentials",
+  "mcpServers": {
+    "github": {
+      "_comment": "GitHub MCP — PRs, issues, actions",
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    },
+    "context7": {
+      "_comment": "Live docs lookup — Next.js, React, any framework",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}
