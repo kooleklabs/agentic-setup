@@ -18,7 +18,48 @@
 #   MIGRATION_PLAN.md      — gap report + phased migration roadmap
 # ============================================================
 
-set -euo pipefail
+set -eo pipefail
+
+# Resolve the directory this script lives in (works when run from npm
+# package AND when piped via curl where BASH_SOURCE may be empty).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-}")" && pwd 2>/dev/null || echo "")"
+
+# Path to the Node Agent SDK runner. When the runner + Node are available
+# we use the SDK (no hook-blocking, live streaming, cleaner errors). When
+# not, we fall back to plain `claude -p` (the old path, with its caveats).
+CLAUDE_RUNNER="$SCRIPT_DIR/lib/claude-runner.js"
+
+run_claude() {
+  # Usage: run_claude --prompt-file PROMPT [--capture-to OUT] [--title "Phase N — ..."]
+  if [[ -f "$CLAUDE_RUNNER" ]] && command -v node &> /dev/null; then
+    node "$CLAUDE_RUNNER" "$@"
+    return $?
+  fi
+
+  # Fallback: legacy claude -p with the flags we know are needed.
+  local prompt_file="" capture_to="" title=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --prompt-file) prompt_file="$2"; shift 2 ;;
+      --capture-to)  capture_to="$2";  shift 2 ;;
+      --title)       title="$2";       shift 2 ;;
+      *)             shift ;;
+    esac
+  done
+
+  [[ -n "$title" ]] && echo "$title"
+
+  if [[ -n "$capture_to" ]]; then
+    ENABLE_SECURITY_REMINDER=0 claude -p "$(cat "$prompt_file")" \
+      --permission-mode bypassPermissions \
+      --allowedTools "Write Edit MultiEdit Read Bash Glob Grep TodoWrite" \
+      > "$capture_to"
+  else
+    ENABLE_SECURITY_REMINDER=0 claude -p "$(cat "$prompt_file")" \
+      --permission-mode bypassPermissions \
+      --allowedTools "Write Edit MultiEdit Read Bash Glob Grep TodoWrite"
+  fi
+}
 
 # Colors
 RED='\033[0;31m'
@@ -217,7 +258,7 @@ PHASE1EOF
   [[ -n "$SOURCE_SAMPLES" ]] && printf "%b" "$SOURCE_SAMPLES" >> "$PHASE1_PROMPT"
 
   log_step "Running Phase 1 analysis..."
-  claude -p "$(cat "$PHASE1_PROMPT")" > "$ANALYSIS_FILE"
+  run_claude --prompt-file "$PHASE1_PROMPT" --capture-to "$ANALYSIS_FILE" --title "Phase 1 — Scanning codebase"
   rm "$PHASE1_PROMPT"
 
   log_step "Analysis written to: ${BOLD}$ANALYSIS_FILE${NC}"
@@ -290,7 +331,7 @@ echo "" >> "$PHASE2_PROMPT"
 cat "$ANALYSIS_FILE" >> "$PHASE2_PROMPT"
 
 log_step "Running Phase 2 framework generation..."
-claude -p "$(cat "$PHASE2_PROMPT")"
+run_claude --prompt-file "$PHASE2_PROMPT" --title "Phase 2 — Generating framework to match codebase reality"
 rm "$PHASE2_PROMPT"
 
 log_step "Framework generated in .claude/"
@@ -397,7 +438,7 @@ echo "CLAUDE.md content:" >> "$PHASE3_PROMPT"
 [[ -f "CLAUDE.md" ]] && cat CLAUDE.md >> "$PHASE3_PROMPT"
 
 log_step "Running Phase 3 gap analysis..."
-claude -p "$(cat "$PHASE3_PROMPT")" > MIGRATION_PLAN.md
+run_claude --prompt-file "$PHASE3_PROMPT" --capture-to "MIGRATION_PLAN.md" --title "Phase 3 — Building migration roadmap"
 rm "$PHASE3_PROMPT"
 
 log_step "Migration plan written to: ${BOLD}MIGRATION_PLAN.md${NC}"
