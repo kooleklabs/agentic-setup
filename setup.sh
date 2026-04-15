@@ -946,7 +946,6 @@ if command -v claude &> /dev/null; then
   echo ""
   log_info "Run these commands to install plugins:"
   echo ""
-  echo -e "  ${CYAN}/plugin install dev-workflows@claude-code-workflows${NC}"
   echo -e "  ${CYAN}/plugin install comprehensive-review${NC}"
   echo -e "  ${CYAN}/plugin install security-scanning${NC}"
   echo ""
