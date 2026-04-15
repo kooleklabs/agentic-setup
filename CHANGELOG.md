@@ -3,6 +3,18 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] — 2026-04-16
+
+### Fixed
+
+- `setup.sh` generated `.claude/settings.json` with hooks in the wrong shape — each hook entry had a bare `"command"` key instead of a `"hooks": [{"type": "command", "command": "..."}]` array. Claude Code skipped the entire file with `hooks: Expected array, but received undefined`.
+- `setup.sh` generated `.claude/settings.local.json` with `"model"` as an object (`{"default": "sonnet", "planning": "opus"}`). Claude Code requires `"model"` to be a plain string; the object caused `model: Expected string, but received object` and the file was skipped entirely.
+- The project's own `.claude/settings.json` had a non-standard `"if"` field inside the hook object and an overly broad `"matcher": "Bash"`. Replaced with `"matcher": "Bash(git commit*)"` and removed the unsupported `"if"` key.
+
+All three issues caused the affected settings file to be **skipped entirely**, meaning hooks, model overrides, and permission rules were silently ignored.
+
+---
+
 ## [2.4.0] — 2026-04-15
 
 ### Added
