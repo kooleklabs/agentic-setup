@@ -224,3 +224,67 @@ PHASE1EOF
   log_info "Review and edit this file before continuing if needed."
   echo ""
 fi
+
+# ============================================================
+# Phase 2 — Generate .claude/ framework
+# ============================================================
+log_phase "Phase 2 of 3 — Generating reality-accurate framework"
+
+PHASE2_PROMPT=$(mktemp)
+cat > "$PHASE2_PROMPT" << 'PHASE2EOF'
+You are setting up an agentic development framework for an EXISTING codebase.
+
+You have been given a CODEBASE_ANALYSIS.md that describes what the codebase actually is today.
+Your job is to generate a .claude/ framework that is accurate to this reality — not aspirational.
+
+## Critical rule: Reality first
+
+CLAUDE.md guardrails must describe what the code DOES TODAY, not what it should do.
+If the codebase puts business logic in controllers, the guardrail says: "Business logic currently lives in controllers — see MIGRATION_PLAN.md for the path to service layer extraction."
+Do NOT write guardrails the codebase violates. That creates friction and loses trust.
+
+## What to create:
+
+### 1. CLAUDE.md
+Fill in every section with REAL values from the analysis:
+- Project name and stack: exact, from the analysis
+- Build/test/lint/run commands: exact commands detected, no placeholders
+- Architectural guardrails: describe current reality, flag aspirational items with "TARGET:"
+- Deliberate deviations section: list every CONVENTION from the analysis as an accepted pattern
+
+### 2. Customize agents (stack-specific only)
+Modify these to match the detected stack:
+- `.claude/agents/api-engineer.md` — update skills + rules for the actual backend stack
+- `.claude/agents/frontend-engineer.md` — update for the actual frontend stack
+- `.claude/agents/devops-engineer.md` — update for the actual infra
+
+DO NOT modify these universal agents (they work as-is):
+- `architect.md`, `test-engineer.md`, `security-reviewer.md`
+
+### 3. Domain skills
+For each module/domain detected in the analysis, create `.claude/skills/[domain]/SKILL.md`
+Skills must contain patterns observed in the actual code, not generic advice.
+Include: "Current pattern:" (what code does now) and optionally "Target pattern:" (where it's going)
+
+### 4. Merge behavior
+- If CLAUDE.md exists: preserve any sections that are accurate, update what's wrong or placeholder
+- If .claude/ files exist: update them, don't overwrite blindly
+- If no tests detected: add a note in CLAUDE.md under "Test infrastructure: MISSING — see MIGRATION_PLAN.md"
+
+## Output
+Use the Write tool to write each file directly.
+After all files written, run: find .claude -type f | sort
+PHASE2EOF
+
+# Append the analysis
+echo "" >> "$PHASE2_PROMPT"
+echo "## CODEBASE_ANALYSIS.md" >> "$PHASE2_PROMPT"
+echo "" >> "$PHASE2_PROMPT"
+cat "$ANALYSIS_FILE" >> "$PHASE2_PROMPT"
+
+log_step "Running Phase 2 framework generation..."
+claude -p "$(cat "$PHASE2_PROMPT")"
+rm "$PHASE2_PROMPT"
+
+log_step "Framework generated in .claude/"
+echo ""
