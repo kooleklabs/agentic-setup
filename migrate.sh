@@ -225,6 +225,13 @@ PHASE1EOF
   echo ""
 fi
 
+# Guard: ensure analysis file is non-empty before Phase 2
+if [[ ! -s "$ANALYSIS_FILE" ]]; then
+  echo -e "${RED}✗${NC} Analysis file is empty: $ANALYSIS_FILE" >&2
+  log_info "Re-run Phase 1 or provide a valid analysis with --from-analysis"
+  exit 1
+fi
+
 # ============================================================
 # Phase 2 — Generate .claude/ framework
 # ============================================================
