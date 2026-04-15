@@ -303,7 +303,7 @@ Guidelines in brief:
 
 ---
 
-**Built with care by [KoolekLabs](https://github.com/KoolekLabs) / AmanLabs**
+**Built with care by [KoolekLabs](https://github.com/KoolekLabs)
 
 If this saved you time, consider giving the repo a star.
 

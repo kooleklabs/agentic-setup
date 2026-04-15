@@ -13,3 +13,5 @@ agentic-framework.tar.gz
 # Local env
 .env
 .env.local
+
+docs/superpowers/
