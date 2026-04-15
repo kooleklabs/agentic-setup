@@ -4,7 +4,7 @@ Thanks for wanting to make this framework better. It's deliberately small — ke
 
 ## Ground rules
 
-1. **Universal stays universal.** The base agents (`architect`, `test-engineer`, `security-reviewer`), the 4 base skills, and the hooks must work on any stack. If a change requires a specific stack, it belongs in a domain skill or a customizable agent, not the base.
+1. **Universal stays universal.** The base agents (`architect`, `test-engineer`, `security-reviewer`), the 5 universal skills, and the hooks must work on any stack. If a change requires a specific stack, it belongs in a domain skill or a customizable agent, not the base.
 2. **Every file earns its place.** Agent files ≤ 50 lines. Skill files ≤ 100 lines. If it needs to be longer, it probably needs to be split.
 3. **Actionable over abstract.** Skills should contain rules Claude can follow, not general philosophy.
 4. **Boring beats clever.** Prefer proven patterns.
@@ -66,14 +66,19 @@ refactor: split architect.md decision framework
 bash /path/to/agentic-setup/setup.sh --interactive
 
 # Or test generate.sh end-to-end
-echo "Build a todo app with Next.js and Postgres" | bash /path/to/agentic-setup/generate.sh --idea -
+bash /path/to/agentic-setup/generate.sh --idea "Build a todo app with Next.js and Postgres"
 ```
 
 Open the scratch directory in Claude Code and confirm:
 - [ ] All agents load without errors
-- [ ] `/plan-feature` runs
+- [ ] `/onboard` runs and produces an orientation summary
+- [ ] `/plan-feature` runs and shows a risk matrix + rollback steps
+- [ ] `/self-review` runs the test → lint → security loop
+- [ ] `/smart-pr` generates a structured PR description from the diff
+- [ ] `/standup` produces a status summary from git log
 - [ ] `/review-pr` runs
-- [ ] `pre-commit.sh` and `post-edit.sh` execute
+- [ ] `pre-commit.sh` blocks a commit when lint fails
+- [ ] `post-edit.sh` formats a file after an edit
 - [ ] Domain skill auto-activates on a relevant prompt
 
 ## Releasing

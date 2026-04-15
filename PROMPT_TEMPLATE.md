@@ -8,7 +8,7 @@
 #
 # WORKS WITH:
 # - A full PRD document
-# - A proposal (like the Quran platform proposal)
+# - A proposal or spec
 # - A rough idea ("Build an e-commerce platform for Malaysian SMEs")
 # - A list of features
 # - Even a screenshot description
@@ -39,6 +39,13 @@ Create this exact directory structure with all files:
 │   ├── security-review/SKILL.md
 │   └── design-system/SKILL.md
 ├── commands/
+│   ├── self-review.md
+│   ├── smart-pr.md
+│   ├── standup.md
+│   ├── debug.md
+│   ├── check-contracts.md
+│   ├── adr.md
+│   ├── onboard.md
 │   ├── review-pr.md
 │   ├── plan-feature.md
 │   └── design-review.md
@@ -51,23 +58,24 @@ Create this exact directory structure with all files:
 .mcp.json
 CLAUDE.md
 contracts/
+docs/decisions/
 ```
 
-For the universal files (architect.md, test-engineer.md, security-reviewer.md, all 4 universal skills, all commands, hooks), use the standard Universal Agentic Development Framework v1.0.0 templates — you know these patterns.
+For the universal files (architect.md, test-engineer.md, security-reviewer.md, all 5 universal skills, all 10 commands, hooks), use the standard Universal Agentic Development Framework v1.1.0 templates — you know these patterns.
 
 ## Step 2: Customize for my project
 
 Read my requirement below and:
 
-1. **CLAUDE.md** — Fill in: project name, tech stack (infer from requirement), build/test/lint commands, architectural guardrails specific to this project
+1. **CLAUDE.md** — Fill in: project name, tech stack (infer from requirement), build/test/lint/run commands, architectural guardrails specific to this project
 
 2. **api-engineer.md** — Customize skills and rules for the detected backend stack
 
 3. **frontend-engineer.md** — Customize for detected frontend framework + add design-system skill
 
-4. **devops-engineer.md** — Customize for the deployment target
+4. **devops-engineer.md** — Customize for the deployment target (Docker, K8s, serverless, etc.)
 
-5. **design-system/SKILL.md** — Create brand colors, typography, accessibility rules appropriate for the target users
+5. **design-system/SKILL.md** — Replace `#REPLACE` color placeholders with colors appropriate for the project's target users and brand; fill in typography choices
 
 6. **Domain skills** — For each major module/feature in the requirement, create a new `.claude/skills/[domain]/SKILL.md` with:
    - Business rules and constraints
@@ -77,13 +85,15 @@ Read my requirement below and:
 
 7. **.mcp.json** — Add MCP servers for: database (if mentioned), Figma (if UI work), payment gateway (if payments), and Context7 for live docs
 
-8. **contracts/** — If APIs are described, create an OpenAPI skeleton
+8. **contracts/** — If APIs are described, create an OpenAPI skeleton at `contracts/api-spec.yaml`
 
 ## Step 3: Show me the result
 
 After creating all files, run:
 ```bash
-find . -name "*.md" -o -name "*.json" -o -name "*.sh" -o -name "*.yaml" | grep -E "\.claude|CLAUDE|claudeignore|mcp\.json|contracts" | sort
+find . \( -name "*.md" -o -name "*.json" -o -name "*.sh" -o -name "*.yaml" \) \
+  | grep -E "\.claude|CLAUDE|claudeignore|mcp\.json|contracts|docs/decisions" \
+  | sort
 ```
 
 Then give me a summary: what was created, what's universal vs customized, and what I should review first.

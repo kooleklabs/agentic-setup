@@ -299,15 +299,6 @@ EOF
 
 ---
 
-## Recommended plugins
-
-Install directly inside Claude Code:
-
-```text
-/plugin install comprehensive-review
-/plugin install security-scanning
-```
-
 ---
 
 ## FAQ
