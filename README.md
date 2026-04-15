@@ -4,13 +4,13 @@
 
 **Drop into any project — new or existing. One command, one prompt. Ship with AI agents.**
 
+[![npm](https://img.shields.io/npm/v/@kooleklabs/agentic-app.svg?color=cb3837&label=npm)](https://www.npmjs.com/package/@kooleklabs/agentic-app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-5B3FFF.svg)](https://docs.claude.com/en/docs/claude-code)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](./CHANGELOG.md)
+[![CI](https://github.com/kooleklabs/agentic-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/kooleklabs/agentic-setup/actions/workflows/ci.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
-[![Maintained](https://img.shields.io/badge/maintained-yes-success.svg)](https://github.com/KoolekLabs/agentic-setup/commits/main)
 
-[Start here](#-start-here) •
+[Quick start](#-quick-start) •
 [Daily workflow](#-daily-workflow) •
 [Command reference](#-command-reference) •
 [Architecture](#-architecture) •
@@ -36,92 +36,58 @@ A batteries-included framework that turns any codebase into an **agent-ready** w
 
 ---
 
-## 🚀 Start here
+## 🚀 Quick start
 
 ![Framework overview](./docs/framework-overview.png)
 
-> **Prerequisites:** `bash`, `git`, and [Claude Code](https://docs.claude.com/en/docs/claude-code) installed. The npm path additionally needs Node.js 16+.
-
----
-
-### Path 1 — Base framework only *(fastest)*
+> **Prerequisites:** Node.js 16+ and [Claude Code](https://docs.claude.com/en/docs/claude-code). That's it — no clone, no curl, no path juggling.
 
 ```bash
 cd your-project
 
-# Recommended — via npx (no clone, no curl, auto-updates)
-npx @kooleklabs/agentic-app init
-
-# Interactive — prompts for project name, stack, and conventions
-npx @kooleklabs/agentic-app init --interactive
+# Pick one:
+npx @kooleklabs/agentic-app init                              # blank scaffolding
+npx @kooleklabs/agentic-app generate --from proposal.docx    # from a PRD / spec
+npx @kooleklabs/agentic-app migrate                           # existing codebase
 ```
+
+`npx` pulls the latest release from npm, runs once, and caches it for next time. The framework lands in your current directory.
+
+---
+
+### Which command?
+
+| Command | When to use | What you get |
+|---|---|---|
+| **`init`** | Blank slate, known stack | Universal framework — 6 agents, 5 skills, 10 slash commands, pre-commit hooks. You fill in `CLAUDE.md`. |
+| **`generate`** | Have a PRD, proposal, or a one-liner idea | Everything `init` gives you, plus stack-specific agents, domain skills per module, and an OpenAPI skeleton if APIs are mentioned. |
+| **`migrate`** | Existing codebase | Framework tuned to what your code **actually does today** + `MIGRATION_PLAN.md` gap report (CRITICAL → LOW) with a phased roadmap. |
 
 <details>
-<summary>Alternative install methods (clone or curl)</summary>
+<summary><b><code>generate</code> — all flags</b></summary>
 
 ```bash
-# Clone + run
-git clone https://github.com/KoolekLabs/agentic-setup.git
-bash /path/to/agentic-setup/setup.sh
-
-# One-shot curl (no clone required)
-curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/setup.sh | bash
-```
-
-</details>
-
-Use this when you want the scaffolding now and will add domain skills manually.
-
----
-
-### Path 2 — Auto-generate from a requirement *(recommended for new projects)*
-
-Feed Claude a PRD, spec, or one-liner idea. It generates the full framework with domain-specific agents, skills, and API contracts.
-
-```bash
-cd your-project
-
-# From a document
+# From a document (.md, .txt, .docx, .pdf)
 npx @kooleklabs/agentic-app generate --from /path/to/proposal.docx
 npx @kooleklabs/agentic-app generate --from /path/to/requirements.md
 
 # From an inline idea
 npx @kooleklabs/agentic-app generate --idea "Ride-hailing app with Go Fiber and PostgreSQL"
 
-# Interactive — paste your requirement when prompted
+# Interactive — paste when prompted
 npx @kooleklabs/agentic-app generate
 ```
 
-<details>
-<summary>Alternative install methods (clone or curl)</summary>
+**What Claude writes:** a customized `CLAUDE.md`, stack-specific agents, domain skills per major module, an OpenAPI contract skeleton (if APIs), and a `.mcp.json` wired to relevant tools (DB, Figma, Stripe, etc.).
 
-```bash
-# Clone + run
-bash /path/to/agentic-setup/generate.sh --from /path/to/proposal.docx
-
-# One-shot curl
-curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/generate.sh \
-  | bash -s -- --from /path/to/proposal.docx
-```
+> `.docx` needs `pandoc` on `PATH`. `.pdf` needs `pdftotext` (from `poppler-utils`). Markdown and plain text work with no extras.
 
 </details>
 
-**What Claude generates for you:**
-- `CLAUDE.md` filled with your actual stack and guardrails
-- Stack-specific agent configurations
-- Domain skills for each major module
-- OpenAPI contract skeleton (if APIs mentioned)
-- `.mcp.json` wired to relevant tools (DB, Figma, Stripe, etc.)
-
----
-
-### Path 3 — Migrate an existing codebase *(reality-accurate setup + gap report)*
-
-Already have a project? `migrate` analyzes your repo, generates a framework that reflects what your code **actually does today**, and produces a prioritized gap report.
+<details>
+<summary><b><code>migrate</code> — all flags</b></summary>
 
 ```bash
-cd your-project
-
 # Standard depth (recommended)
 npx @kooleklabs/agentic-app migrate
 
@@ -138,23 +104,55 @@ npx @kooleklabs/agentic-app migrate --dir /path/to/your/repo
 npx @kooleklabs/agentic-app migrate --from-analysis CODEBASE_ANALYSIS.md
 ```
 
-**Three durable artifacts — review each before the next phase runs:**
+**Three durable artifacts you review between phases:**
 
 | Artifact | What it is |
-|----------|------------|
+|---|---|
 | `CODEBASE_ANALYSIS.md` | Detected stack, commands, patterns, deliberate conventions |
-| `.claude/` | Reality-accurate framework — CLAUDE.md reflects what code does today |
+| `.claude/` | Reality-accurate framework — `CLAUDE.md` reflects what the code does today |
 | `MIGRATION_PLAN.md` | Gap report (CRITICAL → LOW) + phased roadmap with quick wins first |
-
-> No CLI? Copy [`MIGRATE_TEMPLATE.md`](./MIGRATE_TEMPLATE.md) and paste into claude.ai with your files attached.
 
 See [`examples/legacy-django-api.md`](./examples/legacy-django-api.md) for a full walkthrough.
 
+</details>
+
 ---
 
-### Path 4 — Paste into Claude Code or claude.ai *(no CLI needed)*
+### Install globally *(optional)*
 
-Open [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md), copy the prompt, fill in your requirement, and paste it into Claude Code or claude.ai. Claude creates the full framework directly.
+Skip the `npx` prefix each time:
+
+```bash
+npm install -g @kooleklabs/agentic-app
+
+agentic-app init
+agentic-app generate --from proposal.docx
+agentic-app migrate
+```
+
+### No Node.js? Use the bash scripts directly
+
+<details>
+<summary>Clone or curl — same scaffolding, no npm dependency</summary>
+
+```bash
+# One-shot curl (base framework)
+curl -fsSL https://raw.githubusercontent.com/kooleklabs/agentic-setup/main/setup.sh | bash
+
+# Generate from a doc via curl
+curl -fsSL https://raw.githubusercontent.com/kooleklabs/agentic-setup/main/generate.sh \
+  | bash -s -- --from /path/to/proposal.docx
+
+# Or clone if you prefer local scripts
+git clone https://github.com/kooleklabs/agentic-setup.git
+bash /path/to/agentic-setup/setup.sh
+```
+
+</details>
+
+### No CLI at all?
+
+Copy [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md) (new project) or [`MIGRATE_TEMPLATE.md`](./MIGRATE_TEMPLATE.md) (existing project) and paste into Claude Code or claude.ai with your repo attached.
 
 ---
 
@@ -386,7 +384,7 @@ Guidelines in brief:
 
 ---
 
-**Built with care by [KoolekLabs](https://github.com/KoolekLabs)**
+**Built with care by [KoolekLabs](https://github.com/kooleklabs)**
 
 If this saved you time, consider giving the repo a ⭐
 
