@@ -295,3 +295,125 @@ rm "$PHASE2_PROMPT"
 
 log_step "Framework generated in .claude/"
 echo ""
+
+# ============================================================
+# Phase 3 — Gap Report + Migration Plan
+# ============================================================
+log_phase "Phase 3 of 3 — Generating gap report and migration roadmap"
+
+PHASE3_PROMPT=$(mktemp)
+cat > "$PHASE3_PROMPT" << 'PHASE3EOF'
+You are producing a MIGRATION_PLAN.md for an existing codebase adopting the agentic development framework.
+
+You have two inputs:
+1. CODEBASE_ANALYSIS.md — what the codebase is today
+2. The .claude/ framework just generated — what the agentic ideal looks like
+
+Your job: compare them, identify gaps, then produce a phased migration roadmap.
+
+## Gap classification
+
+For each gap found:
+- CRITICAL: security vulnerabilities, correctness risks, missing auth/validation
+- HIGH: architectural violations that cause real pain (god objects, business logic in wrong layer)
+- MEDIUM: convention drift, inconsistent patterns, missing tests for key flows
+- LOW: hygiene, naming, comments, minor style issues
+
+## Deliberate deviation rule
+If CODEBASE_ANALYSIS.md marks something as a CONVENTION (consistent across 3+ files):
+→ Place it in "Deliberate Deviations", NOT in the gap list
+→ The framework works around these, not against them
+
+## Output: MIGRATION_PLAN.md
+
+Write a document with EXACTLY these sections:
+
+---
+
+# Migration Plan — [Project Name]
+Generated: [today's date]
+
+## Gap Report
+
+### Critical Gaps
+[Each gap: severity badge, file:line if known, what's wrong, specific fix]
+
+### High Gaps
+[same format]
+
+### Medium Gaps
+[same format]
+
+### Low Gaps
+[same format]
+
+### Deliberate Deviations (not gaps)
+[Each: "CONVENTION: [description] — framework respects this, no action needed"]
+
+---
+
+## Migration Roadmap
+
+### Phase 1: Quick Wins (no structural change, can do in a day)
+- [ ] [Specific action] — [why it matters]
+
+### Phase 2: Structural Refactors (requires planning, days to weeks)
+- [ ] [Specific action] — [why it matters] — use /plan-feature for each
+
+### Phase 3: Hardening (tests, observability, security — ongoing)
+- [ ] [Specific action] — [why it matters]
+
+---
+
+## What NOT to Change
+[Explicit list of things the framework is designed to work around]
+[Include all deliberate deviations + any compliance/legacy constraints visible in the analysis]
+
+---
+
+## Special rules
+- If NO TESTS detected in analysis: Phase 1 item #1 must be "Add test infrastructure"
+- If NO CI/CD detected: Phase 1 must include "Add CI pipeline"
+- Be specific — "refactor UserController" beats "improve code quality"
+- Each roadmap item should be executable by one developer in one sprint
+PHASE3EOF
+
+# Append both inputs
+echo "" >> "$PHASE3_PROMPT"
+echo "## CODEBASE_ANALYSIS.md" >> "$PHASE3_PROMPT"
+echo "" >> "$PHASE3_PROMPT"
+cat "$ANALYSIS_FILE" >> "$PHASE3_PROMPT"
+
+echo "" >> "$PHASE3_PROMPT"
+echo "## Generated .claude/ framework (find output)" >> "$PHASE3_PROMPT"
+echo "" >> "$PHASE3_PROMPT"
+find .claude -type f | sort >> "$PHASE3_PROMPT"
+echo "" >> "$PHASE3_PROMPT"
+echo "CLAUDE.md content:" >> "$PHASE3_PROMPT"
+[[ -f "CLAUDE.md" ]] && cat CLAUDE.md >> "$PHASE3_PROMPT"
+
+log_step "Running Phase 3 gap analysis..."
+claude -p "$(cat "$PHASE3_PROMPT")" > MIGRATION_PLAN.md
+rm "$PHASE3_PROMPT"
+
+log_step "Migration plan written to: ${BOLD}MIGRATION_PLAN.md${NC}"
+
+# ============================================================
+# Summary
+# ============================================================
+echo ""
+echo -e "${GREEN}╔══════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║  ${BOLD}Migration complete!${NC}${GREEN}                              ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "  ${BOLD}Artifacts produced:${NC}"
+echo -e "  ├── ${CYAN}$ANALYSIS_FILE${NC}    ← what your codebase actually is"
+echo -e "  ├── ${CYAN}.claude/${NC}              ← reality-accurate framework"
+echo -e "  └── ${CYAN}MIGRATION_PLAN.md${NC}     ← gap report + roadmap"
+echo ""
+echo -e "  ${BOLD}Recommended next steps:${NC}"
+echo -e "  ${CYAN}1.${NC} Review CODEBASE_ANALYSIS.md — correct any misdetections"
+echo -e "  ${CYAN}2.${NC} Review CLAUDE.md — verify it reflects your project accurately"
+echo -e "  ${CYAN}3.${NC} Open MIGRATION_PLAN.md — start with Phase 1 quick wins"
+echo -e "  ${CYAN}4.${NC} Open Claude Code and type: ${BOLD}/plan-feature${NC}"
+echo ""
