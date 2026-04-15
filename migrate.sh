@@ -91,6 +91,7 @@ log_phase()  { echo -e "\n${PURPLE}━━━ $1 ━━━${NC}\n"; }
 DEPTH="standard"
 TARGET_DIR="$(pwd)"
 FROM_ANALYSIS=""
+AGENT_TARGET="both"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -103,6 +104,9 @@ while [[ $# -gt 0 ]]; do
     --from-analysis)
       [[ -z "${2:-}" ]] && { echo "Error: --from-analysis requires an argument" >&2; exit 1; }
       FROM_ANALYSIS="$2"; shift 2 ;;
+    --target)
+      [[ -z "${2:-}" ]] && { echo "Error: --target requires an argument" >&2; exit 1; }
+      AGENT_TARGET="$2"; shift 2 ;;
     *) echo "Unknown option: $1"; exit 1 ;;
   esac
 done
@@ -110,6 +114,7 @@ done
 print_banner
 log_info "Target directory: $TARGET_DIR"
 log_info "Analysis depth:   $DEPTH"
+log_info "Agent target:     $AGENT_TARGET"
 [[ -n "$FROM_ANALYSIS" ]] && log_info "Resuming from:    $FROM_ANALYSIS"
 echo ""
 
@@ -323,6 +328,33 @@ Include: "Current pattern:" (what code does now) and optionally "Target pattern:
 Use the Write tool to write each file directly.
 After all files written, run: find .claude -type f | sort
 PHASE2EOF
+
+# Add Copilot instructions to Phase 2 prompt when target includes copilot
+if [[ "$AGENT_TARGET" == "copilot" || "$AGENT_TARGET" == "both" ]]; then
+  cat >> "$PHASE2_PROMPT" << 'COPILOT_PHASE2'
+
+### 5. Generate Copilot CLI artifacts
+Also generate these files for GitHub Copilot CLI compatibility:
+
+#### a) .github/copilot-instructions.md
+Project-level Copilot instructions. Mirror key CLAUDE.md content but add Copilot-specific guidance:
+- Reference agent definitions in AGENTS.md
+- Reference skill instructions in .github/instructions/
+- Note that /plan (not /plan-feature) is Copilot's planning command
+
+#### b) AGENTS.md
+Aggregate all agent definitions into a single AGENTS.md file at the repo root.
+Each agent gets a section with: role, workflow, and rules (adapted from .claude/agents/*.md).
+
+#### c) .github/instructions/*.instructions.md
+For each skill in .claude/skills/, create a corresponding .github/instructions/[skill-name].instructions.md.
+Convert YAML frontmatter to a markdown header and keep the content.
+
+After creating Copilot artifacts, also verify:
+find .github/instructions -name "*.instructions.md" | sort
+ls -la AGENTS.md .github/copilot-instructions.md
+COPILOT_PHASE2
+fi
 
 # Append the analysis
 echo "" >> "$PHASE2_PROMPT"

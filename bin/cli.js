@@ -36,12 +36,14 @@ Usage:
 Commands:
   init, setup                 Install base framework in the current directory
     --interactive             Prompt for project name, stack, and conventions
+    --target <target>         Output target: claude, copilot, or both (default: both)
 
   generate [options]          Generate a customized framework from a requirement
     --from <file>             Document (.md, .txt, .docx, .pdf) — pandoc/pdftotext may be required
     --idea "<text>"           Describe the project inline
     --interactive, -i         Pause for clarification when Claude asks a question
     --model <name>            Override model (default: claude-sonnet-4-6)
+    --target <target>         Output target: claude, copilot, or both (default: both)
     --legacy                  Use the bash generate.sh path (no Agent SDK)
 
   migrate [options]           Install framework tuned to an existing codebase
@@ -50,15 +52,31 @@ Commands:
     --standard                Standard depth (default)
     --full                    Full audit — 20+ files, CI, infra
     --from-analysis <file>    Resume from an existing scan (skip Phase 1)
+    --target <target>         Output target: claude, copilot, or both (default: both)
 
 Examples:
   npx @kooleklabs/agentic-app init
   npx @kooleklabs/agentic-app generate --from proposal.docx
   npx @kooleklabs/agentic-app generate --idea "Next.js + Go Fiber + Postgres"
-  npx @kooleklabs/agentic-app migrate --dir ./legacy-api
+  npx @kooleklabs/agentic-app generate --target copilot --from spec.md
+  npx @kooleklabs/agentic-setup migrate --dir ./legacy-api
 
 Docs: https://github.com/kooleklabs/agentic-setup
 `;
+
+function parseTarget(args) {
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--target' && args[i + 1]) {
+      const val = args[i + 1].toLowerCase();
+      if (!['claude', 'copilot', 'both'].includes(val)) {
+        console.error(`Invalid --target value: "${val}". Must be: claude, copilot, or both`);
+        process.exit(1);
+      }
+      return val;
+    }
+  }
+  return 'both';
+}
 
 function runBashScript(scriptName, args) {
   const scriptPath = path.join(PKG_ROOT, scriptName);

@@ -2,11 +2,12 @@
 
 # Universal Agentic Development Framework
 
-**Drop into any project — one command installs an agent-ready workspace for Claude Code.**
+**Drop into any project — one command installs an agent-ready workspace for Claude Code and GitHub Copilot CLI.**
 
 [![npm](https://img.shields.io/npm/v/@kooleklabs/agentic-app.svg?color=cb3837&label=npm)](https://www.npmjs.com/package/@kooleklabs/agentic-app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-5B3FFF.svg)](https://docs.claude.com/en/docs/claude-code)
+[![Copilot CLI](https://img.shields.io/badge/Copilot%20CLI-compatible-1F6FEB.svg)](https://docs.github.com/copilot/concepts/agents/about-copilot-cli)
 [![CI](https://github.com/kooleklabs/agentic-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/kooleklabs/agentic-setup/actions/workflows/ci.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
@@ -24,14 +25,15 @@
 
 ## Overview
 
-A batteries-included framework that turns **any codebase into an agent-ready workspace**. It ships the scaffolding — agents, skills, commands, hooks, and guardrails — so Claude Code can plan, build, test, and review alongside you from day one.
+A batteries-included framework that turns **any codebase into an agent-ready workspace**. It ships the scaffolding — agents, skills, commands, hooks, and guardrails — so Claude Code or GitHub Copilot CLI can plan, build, test, and review alongside you from day one.
 
 |  |  |
 |---|---|
 | **One command** | `npx @kooleklabs/agentic-app generate --from proposal.docx` — that's the whole install |
 | **Universal** | Any stack — Next.js, Go, Laravel, Rails, Django, FastAPI, Rust, anything |
+| **Multi-agent** | Works with Claude Code, Copilot CLI, or both — use `--target` to choose |
 | **Greenfield or legacy** | New project or 10-year-old codebase, both are first-class via `generate` / `migrate` |
-| **Autonomous or guided** | Default: Claude makes reasonable choices. `--interactive` pauses for clarification |
+| **Autonomous or guided** | Default: agent makes reasonable choices. `--interactive` pauses for clarification |
 | **Cost-aware** | Every run ends with token counts + USD estimate |
 | **Transparent** | Every agent, skill, and hook is a plain Markdown file you own and can edit |
 
@@ -48,7 +50,7 @@ A batteries-included framework that turns **any codebase into an agent-ready wor
 
 </details>
 
-> **Prerequisites:** Node.js ≥18 and [Claude Code](https://docs.claude.com/en/docs/claude-code) logged in. `pandoc` or `pdftotext` only needed if you feed `.docx` / `.pdf`.
+> **Prerequisites:** Node.js ≥18 and [Claude Code](https://docs.claude.com/en/docs/claude-code) or [Copilot CLI](https://docs.github.com/copilot/concepts/agents/about-copilot-cli) (or both). `pandoc` or `pdftotext` only needed if you feed `.docx` / `.pdf`.
 
 ```bash
 cd your-project
@@ -57,6 +59,14 @@ cd your-project
 npx @kooleklabs/agentic-app init                              # blank scaffolding
 npx @kooleklabs/agentic-app generate --from proposal.docx    # from a PRD / spec
 npx @kooleklabs/agentic-app migrate                           # existing codebase
+```
+
+By default, the framework generates artifacts for **both** Claude Code and Copilot CLI. Use `--target` to choose:
+
+```bash
+npx @kooleklabs/agentic-app init --target claude    # Claude Code only
+npx @kooleklabs/agentic-app init --target copilot   # Copilot CLI only (+ CLAUDE.md, shared)
+npx @kooleklabs/agentic-app init --target both      # Both (default)
 ```
 
 `npx` pulls the latest release from npm, runs once, and caches it. No clone. No curl. No path juggling.

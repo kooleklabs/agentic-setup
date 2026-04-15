@@ -49,6 +49,33 @@ log_warn() { echo -e "${YELLOW}[!]${NC} $1"; }
 log_create() { echo -e "  ${PURPLE}→${NC} $1"; }
 
 # ============================================================
+# Parse arguments
+# ============================================================
+TARGET="both"
+INTERACTIVE_MODE=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --interactive)
+      INTERACTIVE_MODE=true
+      shift
+      ;;
+    --target)
+      TARGET="${2:-both}"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+# Helper: should we generate Claude artifacts?
+wants_claude() { [[ "$TARGET" == "claude" || "$TARGET" == "both" ]]; }
+# Helper: should we generate Copilot artifacts?
+wants_copilot() { [[ "$TARGET" == "copilot" || "$TARGET" == "both" ]]; }
+
+# ============================================================
 # Interactive mode: gather project info
 # ============================================================
 PROJECT_NAME=""
@@ -58,7 +85,7 @@ TEST_CMD=""
 LINT_CMD=""
 RUN_CMD=""
 
-if [[ "${1:-}" == "--interactive" ]]; then
+if [[ "$INTERACTIVE_MODE" == "true" ]]; then
   print_banner
   echo -e "${BOLD}Let's configure your project:${NC}"
   echo ""
@@ -79,25 +106,35 @@ else
   RUN_CMD="${RUN_CMD:-[YOUR_RUN_COMMAND]}"
 fi
 
+log_info "Target: ${TARGET}"
+
 # ============================================================
 # Create directory structure
 # ============================================================
 log_step "Creating directory structure..."
 
-mkdir -p .claude/agents
-mkdir -p .claude/skills/coding-standards
-mkdir -p .claude/skills/api-design
-mkdir -p .claude/skills/testing
-mkdir -p .claude/skills/security-review
-mkdir -p .claude/skills/design-system
-mkdir -p .claude/commands
-mkdir -p .claude/hooks
+if wants_claude; then
+  mkdir -p .claude/agents
+  mkdir -p .claude/skills/coding-standards
+  mkdir -p .claude/skills/api-design
+  mkdir -p .claude/skills/testing
+  mkdir -p .claude/skills/security-review
+  mkdir -p .claude/skills/design-system
+  mkdir -p .claude/commands
+  mkdir -p .claude/hooks
+  log_create ".claude/agents/"
+  log_create ".claude/skills/ (5 universal skills)"
+  log_create ".claude/commands/"
+  log_create ".claude/hooks/"
+fi
+
+if wants_copilot; then
+  mkdir -p .github/instructions
+  log_create ".github/instructions/"
+fi
+
 mkdir -p contracts
 
-log_create ".claude/agents/"
-log_create ".claude/skills/ (5 universal skills)"
-log_create ".claude/commands/"
-log_create ".claude/hooks/"
 log_create "contracts/"
 
 # ============================================================
@@ -192,6 +229,7 @@ CLAUDEMD
 # ============================================================
 # .claudeignore
 # ============================================================
+if wants_claude; then
 log_step "Creating .claudeignore..."
 
 cat > .claudeignore << 'EOF'
@@ -245,10 +283,12 @@ temp/
 .cache/
 .docker/
 EOF
+fi
 
 # ============================================================
 # AGENTS — Layer 4
 # ============================================================
+if wants_claude; then
 log_step "Creating agents..."
 
 # --- architect.md (UNIVERSAL) ---
@@ -513,10 +553,12 @@ You are a senior DevOps engineer. Your workflow:
 - All services behind health checks before receiving traffic
 EOF
 log_create "devops-engineer.md (customize per infra)"
+fi
 
 # ============================================================
 # SKILLS — Layer 5
 # ============================================================
+if wants_claude; then
 log_step "Creating skills..."
 
 # --- coding-standards (UNIVERSAL) ---
@@ -764,10 +806,12 @@ Use a consistent scale (e.g., 4px base: 4, 8, 12, 16, 24, 32, 48, 64).
 Avoid arbitrary spacing values — pick the nearest scale step.
 EOF
 log_create "design-system/SKILL.md (customize per project)"
+fi
 
 # ============================================================
 # COMMANDS — Layer 6
 # ============================================================
+if wants_claude; then
 log_step "Creating commands..."
 
 # --- /self-review (UNIVERSAL) ---
@@ -1339,10 +1383,12 @@ cat .mcp.json 2>/dev/null || true
 - Keep the summary scannable: bullets over paragraphs, facts over adjectives
 EOF
 log_create "onboard.md (universal)"
+fi
 
 # ============================================================
 # HOOKS — Layer 6
 # ============================================================
+if wants_claude; then
 log_step "Creating hooks..."
 
 cat > .claude/hooks/pre-commit.sh << 'HOOKEOF'
@@ -1473,10 +1519,12 @@ esac
 HOOKEOF
 chmod +x .claude/hooks/post-edit.sh
 log_create "post-edit.sh (universal, auto-detects language)"
+fi
 
 # ============================================================
 # SETTINGS — Layer 6
 # ============================================================
+if wants_claude; then
 log_step "Creating settings..."
 
 cat > .claude/settings.json << 'EOF'
@@ -1520,6 +1568,7 @@ cat > .claude/settings.local.json << 'EOF'
 }
 EOF
 log_create "settings.local.json (git-ignored)"
+fi
 
 # ============================================================
 # .mcp.json — Layer 7
@@ -1588,19 +1637,375 @@ fi
 log_create ".gitignore updated"
 
 # ============================================================
+# COPILOT CLI — .github/copilot-instructions.md
+# ============================================================
+if wants_copilot; then
+  log_step "Creating Copilot CLI artifacts..."
+
+  mkdir -p .github/instructions
+
+  cat > .github/copilot-instructions.md << 'COPILOTMD'
+# Copilot Instructions
+
+> This file provides project-level guidance for GitHub Copilot CLI.
+> Copilot also reads CLAUDE.md — this file adds Copilot-specific context.
+
+## Project context
+See `CLAUDE.md` for full project identity, tech stack, and conventions.
+
+## Agent definitions
+Agent roles and responsibilities are defined in `AGENTS.md` at the repository root.
+
+## Skill instructions
+Detailed skill instructions are in `.github/instructions/*.instructions.md`.
+These cover: coding standards, API design, testing, security review, and design system.
+
+## Copilot-specific workflow
+- Use `/plan` to enter plan mode before complex tasks
+- Use `/review` to run code review on changes
+- Use `/research` for deep investigation tasks
+- Use `/diff` to review changes before committing
+- Use `/compact` when context gets long
+
+## Verification protocol
+Before committing:
+1. Run the project test suite
+2. Run the project linter
+3. Check for security issues in changed files
+4. Verify no secrets or credentials in the diff
+COPILOTMD
+  log_create ".github/copilot-instructions.md"
+
+# ============================================================
+# COPILOT CLI — AGENTS.md
+# ============================================================
+  cat > AGENTS.md << 'AGENTSMD'
+# Agents
+
+Agent definitions for this project. Each agent has a specific role, workflow, and set of rules.
+
+## Architect
+
+**Role:** Senior architect. Decomposes complex requirements into tasks, designs system structure, delegates to specialized agents.
+
+**Workflow:**
+1. DECOMPOSE complex requirements into clear, independent tasks
+2. IMPACT ANALYSIS — before touching any file, map what depends on it
+3. DESIGN system structure following project patterns
+4. DELEGATE implementation to specialized agents
+5. VERIFY all pieces integrate correctly
+
+**Rules:**
+- Never skip planning for non-trivial work
+- Verify existing patterns before proposing new ones
+- Prefer boring, proven solutions over clever ones
+- Every phase must leave the codebase working
+
+---
+
+## API Engineer
+
+**Role:** Implements API endpoints, service logic, and data access.
+
+**Workflow:**
+1. READ existing codebase — find 2-3 similar implementations first
+2. FOLLOW existing patterns, do not invent new ones
+3. IMPLEMENT with proper error handling and input validation
+4. WRITE or update tests for your changes
+5. Run test suite and linter until clean
+
+**Rules:**
+- Never put business logic in controllers/handlers
+- All DB queries through repository layer
+- Structured error responses with error codes
+- No hardcoded configuration values
+
+---
+
+## Frontend Engineer
+
+**Role:** Implements UI components and pages. Follows design system.
+
+**Workflow:**
+1. Read the design system instructions for brand, tokens, accessibility rules
+2. Implement components that match approved designs
+3. Ensure accessibility: ARIA labels, keyboard nav, contrast ratios
+4. Write component tests
+5. Verify responsive behavior at mobile/tablet/desktop widths
+
+**Rules:**
+- Design system overrides your defaults — follow it exactly
+- Minimum touch target: 48x48px for mobile
+- All interactive elements need visible focus indicators
+- Images need alt text, icons need aria-labels
+
+---
+
+## Test Engineer
+
+**Role:** Writes comprehensive tests, identifies edge cases, validates coverage.
+
+**Workflow:**
+1. Read the implementation and understand all code paths
+2. Identify: happy path, error cases, edge cases, boundaries
+3. Write tests covering each path
+4. Run tests and verify they pass
+
+**Rules:**
+- Tests must be deterministic — no flaky tests
+- Mock external services, never call real APIs in tests
+- Test error messages, not just error codes
+- Each test independent — no shared mutable state
+
+---
+
+## Security Reviewer
+
+**Role:** Read-only security auditor. Reviews code for vulnerabilities without modifying files.
+
+**What to check:**
+1. INJECTION: SQL, XSS, command injection, path traversal
+2. AUTHENTICATION: bypass risks, session handling, JWT validation
+3. AUTHORIZATION: privilege escalation, missing access checks
+4. SECRETS: hardcoded keys, tokens, passwords, connection strings
+5. DATA: unencrypted sensitive data, excessive logging of PII
+
+**Rules:**
+- NEVER modify files — read-only audit
+- Flag ALL findings, even if uncertain
+- Check OWASP Top 10 against every endpoint
+
+---
+
+## DevOps Engineer
+
+**Role:** Handles infrastructure, deployment, CI/CD, and monitoring.
+
+**Workflow:**
+1. Read existing infra configs before adding new ones
+2. Follow the project's deployment patterns
+3. Implement infrastructure-as-code; all changes must be reversible
+4. Validate configs before committing
+
+**Rules:**
+- Every infra change must be reversible — document the rollback
+- No manual prod changes — everything through IaC or CI/CD
+- Secrets in env vars or secret managers, never in code
+AGENTSMD
+  log_create "AGENTS.md"
+
+# ============================================================
+# COPILOT CLI — .github/instructions/*.instructions.md
+# ============================================================
+  cat > .github/instructions/coding-standards.instructions.md << 'EOF'
+# Coding Standards
+
+Universal clean code principles. Auto-activates during any code implementation task.
+
+## Naming
+- Variables/functions: descriptive, verb-based for actions (getUserById, calculateTotal)
+- Booleans: prefix with is/has/can/should (isActive, hasPermission)
+- Constants: UPPER_SNAKE_CASE
+- Files: follow project's existing convention (check 3 files first)
+
+## Functions
+- Single responsibility — one function, one job
+- Under 50 lines when possible (extract helper functions)
+- Maximum 3-4 parameters; use an options object for more
+- Return early for guard clauses — avoid deep nesting
+- Pure functions preferred — minimize side effects
+
+## Error handling
+- Fail fast: validate inputs at the boundary
+- Return explicit errors, never swallow silently
+- Use typed/custom errors with error codes
+- Log errors with context (what failed, why, what input)
+- Never catch-all without re-throwing or logging
+
+## Code organization
+- Group by feature/domain, not by type
+- Keep related code close together
+- Extract shared logic only after 3+ duplications
+- Delete dead code — don't comment it out
+
+## Comments
+- Comments explain WHY, not WHAT
+- TODO comments include context and author
+- API docs on public interfaces
+- No commented-out code blocks
+EOF
+  log_create "coding-standards.instructions.md"
+
+  cat > .github/instructions/api-design.instructions.md << 'EOF'
+# API Design
+
+REST API design patterns. Auto-activates when building API endpoints, routes, or controllers.
+
+## URL conventions
+- Plural nouns for resources: /users, /orders, /products
+- Nested for relationships: /users/:id/orders
+- kebab-case for multi-word: /order-items
+- Version prefix: /api/v1/...
+
+## HTTP methods
+- GET: read (never mutate state)
+- POST: create new resource
+- PUT: full replace
+- PATCH: partial update
+- DELETE: remove resource
+
+## Response format
+- Consistent envelope: { data, error, meta }
+- Pagination: { data: [...], meta: { page, perPage, total, totalPages } }
+- Errors: { error: { code: "VALIDATION_ERROR", message: "...", details: [...] } }
+
+## Status codes
+- 200: success
+- 201: created
+- 204: no content (successful delete)
+- 400: validation error
+- 401: not authenticated
+- 403: not authorized
+- 404: not found
+- 409: conflict
+- 422: unprocessable entity
+- 500: internal server error
+
+## Input validation
+- Validate at the boundary (controller/handler level)
+- Use schema validation (Zod, Joi, JSON Schema)
+- Return all validation errors at once, not one at a time
+- Sanitize strings: trim whitespace, escape HTML
+EOF
+  log_create "api-design.instructions.md"
+
+  cat > .github/instructions/testing.instructions.md << 'EOF'
+# Testing
+
+Testing best practices. Auto-activates when writing or modifying tests.
+
+## Test structure
+- Follow project's existing test conventions (check 2-3 test files)
+- One test file per source file
+- Group tests by behavior, not by method
+- Names describe scenarios: "should return 404 when user not found"
+
+## Coverage priorities
+1. Business logic and domain rules (highest value)
+2. API endpoints — request/response contract
+3. Error handling paths
+4. Edge cases and boundaries
+5. Integration points between modules
+
+## Edge cases to ALWAYS consider
+- Empty/null/undefined inputs
+- Boundary values (0, -1, MAX_INT, empty string)
+- Concurrent access (if applicable)
+- Network failures and timeouts
+- Permission/authorization edge cases
+- Malformed input data
+
+## Rules
+- Tests must be deterministic — no flaky tests
+- Mock external services, never call real APIs in tests
+- Each test independent — no shared mutable state
+- Test error messages, not just error codes
+- Integration tests for cross-module flows
+EOF
+  log_create "testing.instructions.md"
+
+  cat > .github/instructions/security-review.instructions.md << 'EOF'
+# Security Review
+
+Security review checklist. Auto-activates when reviewing auth, payment, or access control code.
+
+## Checklist
+1. INJECTION: SQL, XSS, command injection, path traversal
+2. AUTHENTICATION: bypass risks, session handling, JWT validation
+3. AUTHORIZATION: privilege escalation, missing access checks
+4. SECRETS: hardcoded keys, tokens, passwords, connection strings
+5. DATA: unencrypted sensitive data, excessive logging of PII
+6. DEPENDENCIES: known vulnerable packages
+7. INPUT: missing validation, type coercion issues
+
+## Finding format
+For each finding:
+- **Severity**: CRITICAL / HIGH / MEDIUM / LOW
+- **Location**: file:line
+- **Issue**: what's wrong
+- **Fix**: specific remediation
+
+## Rules
+- Flag ALL findings, even if uncertain
+- Check OWASP Top 10 against every endpoint
+- Verify role-based access on every protected route
+- Check for rate limiting on auth endpoints
+EOF
+  log_create "security-review.instructions.md"
+
+  cat > .github/instructions/design-system.instructions.md << 'EOF'
+# Design System
+
+Design tokens, component patterns, and accessibility rules. Auto-activates for any frontend/UI work.
+
+## Colors
+- Primary: #REPLACE_PRIMARY
+- Secondary: #REPLACE_SECONDARY
+- Accent: #REPLACE_ACCENT
+- Error: #DC2626
+- Warning: #F59E0B
+- Success: #16A34A
+- Background: #FFFFFF
+- Surface: #F9FAFB
+- Text primary: #111827
+- Text secondary: #6B7280
+
+## Typography
+- Font family: Inter, system-ui, sans-serif
+- Base size: 16px
+- Scale: 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 48
+
+## Spacing
+- Base unit: 4px
+- Scale: 4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64
+
+## Accessibility
+- Minimum contrast ratio: 4.5:1 (text), 3:1 (large text)
+- Focus indicators: visible ring on all interactive elements
+- Touch targets: minimum 48x48px
+- All images need alt text
+- ARIA labels on icon-only buttons
+- Keyboard navigable: all interactive elements reachable via Tab
+- Support prefers-reduced-motion
+EOF
+  log_create "design-system.instructions.md"
+fi
+
+# ============================================================
 # Install recommended plugins (if Claude Code available)
 # ============================================================
-if command -v claude &> /dev/null; then
-  log_step "Claude Code detected — installing recommended plugins..."
-  echo ""
-  log_info "Run these commands to install plugins:"
-  echo ""
-  echo -e "  ${CYAN}/plugin install comprehensive-review${NC}"
-  echo -e "  ${CYAN}/plugin install security-scanning${NC}"
-  echo ""
-else
-  log_warn "Claude Code CLI not detected — skip plugin install"
-  log_info "Install plugins manually after setting up Claude Code"
+if wants_claude; then
+  if command -v claude &> /dev/null; then
+    log_step "Claude Code detected — installing recommended plugins..."
+    echo ""
+    log_info "Run these commands to install plugins:"
+    echo ""
+    echo -e "  ${CYAN}/plugin install comprehensive-review${NC}"
+    echo -e "  ${CYAN}/plugin install security-scanning${NC}"
+    echo ""
+  else
+    log_warn "Claude Code CLI not detected — skip plugin install"
+    log_info "Install plugins manually after setting up Claude Code"
+  fi
+fi
+
+if wants_copilot; then
+  if command -v copilot &> /dev/null; then
+    log_step "Copilot CLI detected"
+    log_info "Run 'copilot' in this directory to start using the framework"
+  else
+    log_warn "Copilot CLI not detected — install: npm install -g @github/copilot"
+  fi
 fi
 
 # ============================================================
@@ -1611,24 +2016,53 @@ echo -e "${GREEN}╔════════════════════
 echo -e "${GREEN}║  ${BOLD}Framework installed successfully!${NC}${GREEN}                ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
+echo -e "  ${BOLD}Target: ${TARGET}${NC}"
+echo ""
 echo -e "  ${BOLD}Files created:${NC}"
 echo -e "  ├── CLAUDE.md              ${YELLOW}← customize this first${NC}"
-echo -e "  ├── .claudeignore"
-echo -e "  ├── .mcp.json              ${YELLOW}← add your MCP servers${NC}"
-echo -e "  ├── .claude/"
-echo -e "  │   ├── agents/            (6 agents: 3 universal + 3 customizable)"
-echo -e "  │   ├── skills/            (5 skills: 4 universal + 1 customize-per-brand)"
-echo -e "  │   ├── commands/          (10 universal commands)"
-echo -e "  │   ├── hooks/             (2 universal hooks)"
-echo -e "  │   └── settings.json"
+
+if wants_claude; then
+  echo -e "  ├── .claudeignore"
+  echo -e "  ├── .mcp.json              ${YELLOW}← add your MCP servers${NC}"
+  echo -e "  ├── .claude/"
+  echo -e "  │   ├── agents/            (6 agents: 3 universal + 3 customizable)"
+  echo -e "  │   ├── skills/            (5 skills: 4 universal + 1 customize-per-brand)"
+  echo -e "  │   ├── commands/          (10 universal commands)"
+  echo -e "  │   ├── hooks/             (2 universal hooks)"
+  echo -e "  │   └── settings.json"
+fi
+
+if wants_copilot; then
+  echo -e "  ├── AGENTS.md              ${YELLOW}← agent definitions for Copilot CLI${NC}"
+  echo -e "  ├── .github/"
+  echo -e "  │   ├── copilot-instructions.md"
+  echo -e "  │   └── instructions/      (5 instruction files)"
+fi
+
+echo -e "  ├── .mcp.json              ${YELLOW}← add your MCP servers (shared)${NC}"
 echo -e "  └── contracts/"
 echo ""
 echo -e "  ${BOLD}Next steps:${NC}"
 echo -e "  ${CYAN}1.${NC} Edit CLAUDE.md — fill in your project details"
-echo -e "  ${CYAN}2.${NC} Edit .claude/skills/design-system/SKILL.md — your brand"
-echo -e "  ${CYAN}3.${NC} Add domain skills: .claude/skills/[your-domain]/SKILL.md"
+
+if wants_claude; then
+  echo -e "  ${CYAN}2.${NC} Edit .claude/skills/design-system/SKILL.md — your brand"
+  echo -e "  ${CYAN}3.${NC} Add domain skills: .claude/skills/[your-domain]/SKILL.md"
+fi
+
+if wants_copilot; then
+  echo -e "  ${CYAN}2.${NC} Edit .github/instructions/design-system.instructions.md — your brand"
+  echo -e "  ${CYAN}3.${NC} Add instructions: .github/instructions/[domain].instructions.md"
+fi
+
 echo -e "  ${CYAN}4.${NC} Add MCP servers to .mcp.json (PostgreSQL, Figma, etc.)"
-echo -e "  ${CYAN}5.${NC} Start Claude Code and type: ${BOLD}/plan-feature${NC}"
-echo ""
-echo -e "  ${PURPLE}Total setup time: ~50 minutes to customize for any project${NC}"
+
+if wants_claude; then
+  echo -e "  ${CYAN}5.${NC} Start Claude Code and type: ${BOLD}/plan-feature${NC}"
+fi
+
+if wants_copilot; then
+  echo -e "  ${CYAN}5.${NC} Start Copilot CLI and type: ${BOLD}/plan${NC}"
+fi
+
 echo ""
