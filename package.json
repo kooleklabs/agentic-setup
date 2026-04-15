@@ -33,6 +33,7 @@
   },
   "files": [
     "bin/",
+    "scripts/",
     "setup.sh",
     "generate.sh",
     "migrate.sh",
