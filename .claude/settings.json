@@ -12,14 +12,25 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash(git commit*)",
-        "command": ".claude/hooks/pre-commit.sh"
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-commit.sh",
+            "if": "Bash(git commit*)"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": ".claude/hooks/post-edit.sh \"$TOOL_INPUT_path\""
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/post-edit.sh \"$TOOL_INPUT_path\""
+          }
+        ]
       }
     ]
   }
