@@ -203,23 +203,32 @@ if command -v claude &> /dev/null; then
 
   FORMATTER="$SCRIPT_DIR/scripts/format-claude-stream.js"
 
-  # --permission-mode bypassPermissions: required for unattended runs —
-  # without it, claude pauses forever on the first Write tool call waiting
-  # for an interactive approval that can't arrive (no TTY on stdin).
-  # --output-format stream-json + --verbose: emits a line-delimited JSON
-  # event stream we pipe through the Node formatter for live progress.
+  # Tools Claude needs for a generate run. We pass this explicitly because
+  # the .claude/settings.json that setup.sh writes has a restrictive
+  # allowlist (Read/Grep/Glob/LS/Agent) which blocks Write/Edit even under
+  # --permission-mode bypassPermissions. --allowedTools extends the session
+  # allowlist so writes actually go through.
+  CLAUDE_TOOLS="Write Edit MultiEdit Read Bash Glob Grep TodoWrite"
+
+  # --permission-mode bypassPermissions: skip interactive approval prompts
+  # (no TTY on stdin — a prompt can never be answered).
+  # --output-format stream-json + --verbose: line-delimited JSON event
+  # stream we pipe through the Node formatter for live progress.
   if [[ -f "$FORMATTER" ]] && command -v node &> /dev/null; then
     set +e
     claude -p "$(cat "$PROMPT_FILE")" \
       --permission-mode bypassPermissions \
+      --allowedTools "$CLAUDE_TOOLS" \
       --output-format stream-json \
       --verbose \
       | node "$FORMATTER"
     CLAUDE_EXIT=${PIPESTATUS[0]}
     set -e
   else
-    # Fallback: no formatter available, just run plain with permissions granted.
-    claude -p "$(cat "$PROMPT_FILE")" --permission-mode bypassPermissions
+    # Fallback path when Node isn't on PATH: plain output, no streaming.
+    claude -p "$(cat "$PROMPT_FILE")" \
+      --permission-mode bypassPermissions \
+      --allowedTools "$CLAUDE_TOOLS"
     CLAUDE_EXIT=$?
   fi
 
