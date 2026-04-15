@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: CLI syntax check
+        run: node --check bin/cli.js
+
+      - name: CLI --version matches package.json
+        run: |
+          CLI_VERSION=$(node bin/cli.js --version)
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$CLI_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::CLI version ($CLI_VERSION) doesn't match package.json ($PKG_VERSION)"
+            exit 1
+          fi
+
+      - name: CLI --help works
+        run: node bin/cli.js --help > /dev/null
+
+      - name: Unknown command exits non-zero
+        run: |
+          if node bin/cli.js this-is-not-a-real-command 2>/dev/null; then
+            echo "::error::CLI should exit non-zero on unknown commands"
+            exit 1
+          fi
+
+      - name: npm pack dry-run
+        run: npm pack --dry-run
+
+      - name: Smoke test — init scaffolds a full framework
+        run: |
+          TMP=$(mktemp -d)
+          cd "$TMP"
+          node "$GITHUB_WORKSPACE/bin/cli.js" init
+          for f in CLAUDE.md .claudeignore .mcp.json .claude/settings.json; do
+            if [ ! -e "$f" ]; then
+              echo "::error::Expected $f was not created"
+              exit 1
+            fi
+          done
+          for d in .claude/agents .claude/skills .claude/commands .claude/hooks contracts; do
+            if [ ! -d "$d" ]; then
+              echo "::error::Expected directory $d was not created"
+              exit 1
+            fi
+          done
+          echo "init smoke test passed"
+
+  shellcheck:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run shellcheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './'
+          ignore_paths: |
+            .claude
+            .worktrees
+            node_modules
+          severity: warning
