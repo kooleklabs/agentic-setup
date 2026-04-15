@@ -210,7 +210,11 @@ if command -v claude &> /dev/null; then
   # Kill the heartbeat if the script exits early (Ctrl-C, error, etc.)
   trap 'kill $HEARTBEAT_PID 2>/dev/null; echo ""' EXIT INT TERM
 
-  claude -p "$(cat "$PROMPT_FILE")"
+  # --permission-mode bypassPermissions: required for unattended runs.
+  # Without it, `claude -p` pauses forever on the first Write tool call
+  # waiting for an interactive approval that can never come (no TTY on stdin).
+  # The user opted into this by invoking `generate` in their own project dir.
+  claude -p "$(cat "$PROMPT_FILE")" --permission-mode bypassPermissions
   CLAUDE_EXIT=$?
 
   kill $HEARTBEAT_PID 2>/dev/null
