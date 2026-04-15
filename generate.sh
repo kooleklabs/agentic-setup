@@ -210,6 +210,15 @@ if command -v claude &> /dev/null; then
   # allowlist so writes actually go through.
   CLAUDE_TOOLS="Write Edit MultiEdit Read Bash Glob Grep TodoWrite"
 
+  # Disable the security-guidance plugin's PreToolUse hook via its opt-out
+  # env var. That hook matches certain substrings in written content and
+  # returns exit code 2 to veto the tool call. When Claude generates agent
+  # or skill docs that list those exact substrings as things to avoid, the
+  # hook blocks the write — silent failure that looks like a permission
+  # denial to the model. Setting the env var below tells the hook to
+  # sys.exit(0) unconditionally for this session.
+  export ENABLE_SECURITY_REMINDER=0
+
   # --permission-mode bypassPermissions: skip interactive approval prompts
   # (no TTY on stdin — a prompt can never be answered).
   # --output-format stream-json + --verbose: line-delimited JSON event
