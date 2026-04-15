@@ -1,0 +1,46 @@
+{
+  "name": "@kooleklabs/create-agentic-app",
+  "version": "1.1.0",
+  "description": "Drop into any project — one command installs an agent-ready Claude Code framework with plan-first workflows, skills, hooks, and guardrails.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "agents",
+    "ai",
+    "scaffold",
+    "framework",
+    "create-app"
+  ],
+  "homepage": "https://github.com/KoolekLabs/agentic-setup#readme",
+  "bugs": {
+    "url": "https://github.com/KoolekLabs/agentic-setup/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KoolekLabs/agentic-setup.git"
+  },
+  "license": "MIT",
+  "author": "KoolekLabs",
+  "type": "commonjs",
+  "bin": {
+    "create-agentic-app": "bin/cli.js",
+    "agentic-setup": "bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "setup.sh",
+    "generate.sh",
+    "migrate.sh",
+    "PROMPT_TEMPLATE.md",
+    "MIGRATE_TEMPLATE.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "engines": {
+    "node": ">=16"
+  }
+}

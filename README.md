@@ -40,23 +40,35 @@ A batteries-included framework that turns any codebase into an **agent-ready** w
 
 ![Framework overview](./docs/framework-overview.png)
 
-> **Prerequisites:** `bash`, `git`, and [Claude Code](https://docs.claude.com/en/docs/claude-code) installed.
+> **Prerequisites:** `bash`, `git`, and [Claude Code](https://docs.claude.com/en/docs/claude-code) installed. The npm path additionally needs Node.js 16+.
 
 ---
 
 ### Path 1 — Base framework only *(fastest)*
 
 ```bash
-git clone https://github.com/KoolekLabs/agentic-setup.git
 cd your-project
+
+# Recommended — via npx (no clone, no curl, auto-updates)
+npx @kooleklabs/create-agentic-app init
+
+# Interactive — prompts for project name, stack, and conventions
+npx @kooleklabs/create-agentic-app init --interactive
+```
+
+<details>
+<summary>Alternative install methods (clone or curl)</summary>
+
+```bash
+# Clone + run
+git clone https://github.com/KoolekLabs/agentic-setup.git
 bash /path/to/agentic-setup/setup.sh
 
-# Or interactive — prompts for project name, stack, and conventions
-bash setup.sh --interactive
-
-# Or one-shot install
+# One-shot curl (no clone required)
 curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/setup.sh | bash
 ```
+
+</details>
 
 Use this when you want the scaffolding now and will add domain skills manually.
 
@@ -69,18 +81,30 @@ Feed Claude a PRD, spec, or one-liner idea. It generates the full framework with
 ```bash
 cd your-project
 
-# No clone needed — run directly via curl
-curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/generate.sh | bash -s -- --from /path/to/proposal.docx
-curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/generate.sh | bash -s -- --idea "Ride-hailing app with Go Fiber and PostgreSQL"
+# From a document
+npx @kooleklabs/create-agentic-app generate --from /path/to/proposal.docx
+npx @kooleklabs/create-agentic-app generate --from /path/to/requirements.md
 
-# Or if you have the repo cloned
-bash /path/to/agentic-setup/generate.sh --from /path/to/proposal.docx
-bash /path/to/agentic-setup/generate.sh --from /path/to/requirements.md
-bash /path/to/agentic-setup/generate.sh --idea "Ride-hailing app with Go Fiber and PostgreSQL"
+# From an inline idea
+npx @kooleklabs/create-agentic-app generate --idea "Ride-hailing app with Go Fiber and PostgreSQL"
 
 # Interactive — paste your requirement when prompted
-bash /path/to/agentic-setup/generate.sh
+npx @kooleklabs/create-agentic-app generate
 ```
+
+<details>
+<summary>Alternative install methods (clone or curl)</summary>
+
+```bash
+# Clone + run
+bash /path/to/agentic-setup/generate.sh --from /path/to/proposal.docx
+
+# One-shot curl
+curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/generate.sh \
+  | bash -s -- --from /path/to/proposal.docx
+```
+
+</details>
 
 **What Claude generates for you:**
 - `CLAUDE.md` filled with your actual stack and guardrails
@@ -93,23 +117,25 @@ bash /path/to/agentic-setup/generate.sh
 
 ### Path 3 — Migrate an existing codebase *(reality-accurate setup + gap report)*
 
-Already have a project? `migrate.sh` analyzes your repo, generates a framework that reflects what your code **actually does today**, and produces a prioritized gap report.
+Already have a project? `migrate` analyzes your repo, generates a framework that reflects what your code **actually does today**, and produces a prioritized gap report.
 
 ```bash
+cd your-project
+
 # Standard depth (recommended)
-bash migrate.sh
+npx @kooleklabs/create-agentic-app migrate
 
 # Quick — manifests + README only
-bash migrate.sh --quick
+npx @kooleklabs/create-agentic-app migrate --quick
 
 # Full audit — 20+ files, CI configs, infra
-bash migrate.sh --full
+npx @kooleklabs/create-agentic-app migrate --full
 
 # Target a specific directory
-bash migrate.sh --dir /path/to/your/repo
+npx @kooleklabs/create-agentic-app migrate --dir /path/to/your/repo
 
 # Resume from an existing scan
-bash migrate.sh --from-analysis CODEBASE_ANALYSIS.md
+npx @kooleklabs/create-agentic-app migrate --from-analysis CODEBASE_ANALYSIS.md
 ```
 
 **Three durable artifacts — review each before the next phase runs:**
@@ -228,7 +254,7 @@ your-project/
 <summary><b>E-commerce platform</b></summary>
 
 ```bash
-bash /path/to/agentic-setup/generate.sh --idea "E-commerce platform for Malaysian SMEs with product catalog, \
+npx @kooleklabs/create-agentic-app generate --idea "E-commerce platform for Malaysian SMEs with product catalog, \
 shopping cart, Stripe payments, order management, and delivery tracking. \
 Stack: Next.js + Go Fiber + PostgreSQL + Redis. Deploy on AWS."
 ```
@@ -239,7 +265,7 @@ Stack: Next.js + Go Fiber + PostgreSQL + Redis. Deploy on AWS."
 <summary><b>Mobile fitness app</b></summary>
 
 ```bash
-bash /path/to/agentic-setup/generate.sh --from /path/to/fitness-app-prd.md
+npx @kooleklabs/create-agentic-app generate --from /path/to/fitness-app-prd.md
 ```
 
 </details>
@@ -248,7 +274,7 @@ bash /path/to/agentic-setup/generate.sh --from /path/to/fitness-app-prd.md
 <summary><b>Internal enterprise tool</b></summary>
 
 ```bash
-bash /path/to/agentic-setup/generate.sh --idea "Internal HR management system with leave tracking, payroll \
+npx @kooleklabs/create-agentic-app generate --idea "Internal HR management system with leave tracking, payroll \
 calculation, and employee directory. Stack: Laravel + Vue.js + MySQL. \
 Deploy on company K3s cluster."
 ```
@@ -259,7 +285,7 @@ Deploy on company K3s cluster."
 <summary><b>Legacy Django REST API migration</b></summary>
 
 ```bash
-bash migrate.sh --dir /path/to/your/django-api
+npx @kooleklabs/create-agentic-app migrate --dir /path/to/your/django-api
 ```
 
 See the full scenario in [`examples/legacy-django-api.md`](./examples/legacy-django-api.md).
@@ -267,7 +293,7 @@ See the full scenario in [`examples/legacy-django-api.md`](./examples/legacy-dja
 </details>
 
 Working requirement files live in [`examples/`](./examples):
-- New project: `bash /path/to/agentic-setup/generate.sh --from /path/to/agentic-setup/examples/ecommerce-sme.md`
+- New project: `npx @kooleklabs/create-agentic-app generate --from ./examples/ecommerce-sme.md`
 - Existing project: see `examples/legacy-django-api.md` *(point `--dir` at your actual repo)*
 
 ---
