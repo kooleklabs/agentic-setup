@@ -14,4 +14,7 @@ agentic-framework.tar.gz
 .env
 .env.local
 
+# Git worktrees
+.worktrees/
+
 docs/superpowers/
