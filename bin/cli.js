@@ -41,6 +41,7 @@ Commands:
     --from <file>             Document (.md, .txt, .docx, .pdf) — pandoc/pdftotext may be required
     --idea "<text>"           Describe the project inline
     --interactive, -i         Pause for clarification when Claude asks a question
+    --model <name>            Override model (default: claude-sonnet-4-6)
     --legacy                  Use the bash generate.sh path (no Agent SDK)
 
   migrate [options]           Install framework tuned to an existing codebase
