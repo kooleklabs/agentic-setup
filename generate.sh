@@ -24,7 +24,7 @@
 #   - setup.sh in the same directory (the base framework)
 # ============================================================
 
-set -euo pipefail
+set -eo pipefail
 
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
@@ -32,7 +32,7 @@ YELLOW='\033[1;33m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-}")" && pwd 2>/dev/null || echo "")"
 
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════════════════╗${NC}"
@@ -107,9 +107,8 @@ echo -e "${GREEN}[✓]${NC} Running base framework setup..."
 if [[ -f "$SCRIPT_DIR/setup.sh" ]]; then
   bash "$SCRIPT_DIR/setup.sh" 2>/dev/null
 else
-  echo -e "${YELLOW}[!]${NC} setup.sh not found — creating minimal structure"
-  mkdir -p .claude/{agents,skills,commands,hooks}
-  mkdir -p contracts
+  echo -e "${YELLOW}[!]${NC} setup.sh not found locally — fetching from GitHub..."
+  curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/setup.sh | bash
 fi
 
 # ============================================================
