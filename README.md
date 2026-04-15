@@ -10,12 +10,12 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Maintained](https://img.shields.io/badge/maintained-yes-success.svg)](https://github.com/KoolekLabs/agentic-setup/commits/main)
 
-[Quick start](#quick-start) •
-[Existing codebases](#existing-codebases) •
-[How it works](#how-it-works) •
-[Architecture](#the-7-layer-architecture) •
-[Examples](#examples) •
-[FAQ](#faq) •
+[Start here](#-start-here) •
+[Daily workflow](#-daily-workflow) •
+[Command reference](#-command-reference) •
+[Architecture](#-architecture) •
+[Examples](#-examples) •
+[FAQ](#-faq) •
 [Contributing](./CONTRIBUTING.md)
 
 </div>
@@ -26,52 +26,98 @@
 
 A batteries-included framework that turns any codebase into an **agent-ready** workspace. It ships the scaffolding — agents, skills, commands, hooks, and guardrails — so Claude Code can plan, build, test, and review alongside you from day one.
 
-- **Universal** — works with any stack (Next.js, Go, Laravel, Rails, Django, …)
-- **Greenfield or existing** — spin up a new project OR migrate a legacy codebase with a gap report and phased plan
-- **Opinionated defaults** — plan-first workflow, structured commits, test-before-ship
-- **Progressive** — start solo, scale to multi-agent teams when you need throughput
-- **Transparent** — every agent, skill, and hook is a plain Markdown file you can read and edit
+| | |
+|---|---|
+| **Universal** | Works with any stack — Next.js, Go, Laravel, Rails, Django, and more |
+| **Greenfield or existing** | New project or legacy codebase — both are first-class |
+| **Opinionated defaults** | Plan-first workflow, impact analysis, test-before-ship, rollback in every plan |
+| **Progressive** | Start solo, scale to multi-agent teams when you need throughput |
+| **Transparent** | Every agent, skill, and hook is a plain Markdown file you own and can edit |
 
 ---
 
-## Quick start
+## 🚀 Start here
 
-<table>
-<tr>
-<td width="50%">
+**Where do you want to start?** Pick your path:
 
-**Option A — Clone and run**
-
-```bash
-git clone https://github.com/KoolekLabs/agentic-setup.git
-cd your-project
-bash /path/to/agentic-setup/setup.sh
 ```
-
-</td>
-<td width="50%">
-
-**Option B — One-shot install**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/\
-KoolekLabs/agentic-setup/main/setup.sh | bash
+┌─────────────────────────────────────────────────────────────┐
+│                    WHERE ARE YOU?                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Starting a NEW project?          Have an EXISTING repo?   │
+│         │                                  │               │
+│         ▼                                  ▼               │
+│  ┌─────────────┐                  ┌─────────────────┐      │
+│  │  generate   │                  │    migrate.sh   │      │
+│  │    .sh      │                  │                 │      │
+│  │  (Path 2)   │                  │    (Path 3)     │      │
+│  └─────────────┘                  └─────────────────┘      │
+│         │                                  │               │
+│   Want base                         Scan → generate        │
+│   framework only?                   framework + gap        │
+│         │                           report                  │
+│         ▼                                                   │
+│  ┌─────────────┐                                           │
+│  │  setup.sh   │   No CLI? → Use PROMPT_TEMPLATE.md       │
+│  │  (Path 1)   │              or MIGRATE_TEMPLATE.md      │
+│  └─────────────┘                                           │
+└─────────────────────────────────────────────────────────────┘
 ```
-
-</td>
-</tr>
-</table>
 
 > **Prerequisites:** `bash`, `git`, and [Claude Code](https://docs.claude.com/en/docs/claude-code) installed.
 
 ---
 
-## Existing codebases
-
-Already have a project? `migrate.sh` analyzes your repo, generates a reality-accurate framework, and produces a prioritized gap report — no big-bang rewrite required.
+### Path 1 — Base framework only *(fastest)*
 
 ```bash
-# Standard depth (recommended) — samples source files to detect real patterns
+git clone https://github.com/KoolekLabs/agentic-setup.git
+cd your-project
+bash /path/to/agentic-setup/setup.sh
+
+# Or interactive — prompts for project name, stack, and conventions
+bash setup.sh --interactive
+
+# Or one-shot install
+curl -fsSL https://raw.githubusercontent.com/KoolekLabs/agentic-setup/main/setup.sh | bash
+```
+
+Use this when you want the scaffolding now and will add domain skills manually.
+
+---
+
+### Path 2 — Auto-generate from a requirement *(recommended for new projects)*
+
+Feed Claude a PRD, spec, or one-liner idea. It generates the full framework with domain-specific agents, skills, and API contracts.
+
+```bash
+# From a document
+bash generate.sh --from proposal.docx
+bash generate.sh --from requirements.md
+
+# From an inline idea
+bash generate.sh --idea "Ride-hailing app with Go Fiber and PostgreSQL"
+
+# Interactive — paste your requirement when prompted
+bash generate.sh
+```
+
+**What Claude generates for you:**
+- `CLAUDE.md` filled with your actual stack and guardrails
+- Stack-specific agent configurations
+- Domain skills for each major module
+- OpenAPI contract skeleton (if APIs mentioned)
+- `.mcp.json` wired to relevant tools (DB, Figma, Stripe, etc.)
+
+---
+
+### Path 3 — Migrate an existing codebase *(reality-accurate setup + gap report)*
+
+Already have a project? `migrate.sh` analyzes your repo, generates a framework that reflects what your code **actually does today**, and produces a prioritized gap report.
+
+```bash
+# Standard depth (recommended)
 bash migrate.sh
 
 # Quick — manifests + README only
@@ -83,141 +129,147 @@ bash migrate.sh --full
 # Target a specific directory
 bash migrate.sh --dir /path/to/your/repo
 
-# Resume from an existing analysis (skip Phase 1)
+# Resume from an existing scan
 bash migrate.sh --from-analysis CODEBASE_ANALYSIS.md
 ```
 
-**What it produces:**
+**Three durable artifacts — review each before the next phase runs:**
 
 | Artifact | What it is |
-|----------|-----------|
+|----------|------------|
 | `CODEBASE_ANALYSIS.md` | Detected stack, commands, patterns, deliberate conventions |
-| `.claude/` | Reality-accurate framework — CLAUDE.md reflects what code does today, not ideals |
+| `.claude/` | Reality-accurate framework — CLAUDE.md reflects what code does today |
 | `MIGRATION_PLAN.md` | Gap report (CRITICAL → LOW) + phased roadmap with quick wins first |
 
 > No CLI? Copy [`MIGRATE_TEMPLATE.md`](./MIGRATE_TEMPLATE.md) and paste into claude.ai with your files attached.
 
-See [`examples/legacy-django-api.md`](./examples/legacy-django-api.md) for a full walkthrough on a real-world legacy codebase.
+See [`examples/legacy-django-api.md`](./examples/legacy-django-api.md) for a full walkthrough.
 
 ---
 
-## How it works
+### Path 4 — Paste into Claude Code or claude.ai *(no CLI needed)*
 
-Pick the path that matches your workflow. Expand each panel for details.
-
-<details>
-<summary><b>Path 1 — One-liner setup</b> &nbsp;·&nbsp; <i>fastest, base framework only</i></summary>
-
-```bash
-bash setup.sh                 # Creates the universal .claude/ framework
-bash setup.sh --interactive   # Prompts for project name, stack, and conventions
-```
-
-Use this when you want the scaffolding now and will add domain skills manually later.
-
-</details>
-
-<details open>
-<summary><b>Path 2 — Auto-generate from a requirement</b> &nbsp;·&nbsp; <i>recommended for new projects</i></summary>
-
-Feed Claude a PRD, spec, or one-liner idea and it builds the entire framework plus domain-specific skills, agents, and configs.
-
-```bash
-# From a document
-bash generate.sh --from proposal.docx
-bash generate.sh --from requirements.md
-bash generate.sh --from spec.pdf
-
-# From an inline idea
-bash generate.sh --idea "Ride-hailing app with Go Fiber and PostgreSQL"
-
-# Interactive — paste your requirement when prompted
-bash generate.sh
-```
-
-</details>
-
-<details>
-<summary><b>Path 3 — Migrate an existing codebase</b> &nbsp;·&nbsp; <i>reality-accurate setup + gap report</i></summary>
-
-```bash
-bash migrate.sh               # Scan → generate framework → gap report
-bash migrate.sh --quick       # Surface scan only (manifests + README)
-bash migrate.sh --full        # Deep audit (20+ files, CI, infra)
-```
-
-Three durable artifacts are produced — review and edit each before the next phase runs. Use `--from-analysis` to resume from a saved scan.
-
-</details>
-
-<details>
-<summary><b>Path 4 — Prompt in Claude Code or claude.ai</b> &nbsp;·&nbsp; <i>no CLI needed</i></summary>
-
-**New project:** Open [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md), copy the prompt, fill in your requirement, paste into Claude Code or claude.ai.
-
-**Existing project:** Open [`MIGRATE_TEMPLATE.md`](./MIGRATE_TEMPLATE.md), fill in the four fields at the bottom, paste with your key files attached.
-
-</details>
+Open [`PROMPT_TEMPLATE.md`](./PROMPT_TEMPLATE.md), copy the prompt, fill in your requirement, and paste it into Claude Code or claude.ai. Claude creates the full framework directly.
 
 ---
 
-## What gets created
+## 🗓 Daily workflow
+
+Once the framework is installed, **this is how you use it day to day:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                    DAILY WORKFLOW                           ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                             ║
+║  START OF DAY                                               ║
+║  ├── New session or fresh clone?  →  /onboard              ║
+║  └── Already oriented?            →  /standup              ║
+║                                                             ║
+║  PLANNING                                                   ║
+║  ├── New feature or change?       →  /plan-feature         ║
+║  └── Significant decision made?   →  /adr                  ║
+║                                                             ║
+║  BUILDING  (agents do the work)                            ║
+║  ├── Backend work                 →  api-engineer          ║
+║  ├── Frontend work                →  frontend-engineer     ║
+║  ├── Infrastructure               →  devops-engineer       ║
+║  └── Tests                        →  test-engineer         ║
+║                                                             ║
+║  WHEN THINGS BREAK                                          ║
+║  └── Error / failing test?        →  /debug                ║
+║                                                             ║
+║  BEFORE COMMITTING                                          ║
+║  ├── Run checks                   →  /self-review          ║
+║  └── API surface changed?         →  /check-contracts      ║
+║                                                             ║
+║  SHIPPING                                                   ║
+║  ├── Write PR description         →  /smart-pr             ║
+║  └── Final code review            →  /review-pr            ║
+║                                                             ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+**The golden path for any feature:**
+
+```
+/plan-feature  →  agent builds  →  /self-review  →  /smart-pr  →  /review-pr
+```
+
+---
+
+## 📋 Command reference
+
+All commands are invoked with `/` inside Claude Code (e.g. `/plan-feature`).
+
+| Command | When to use | What it does |
+|---------|-------------|--------------|
+| `/onboard` | New session, new teammate | Scans CLAUDE.md, ADRs, git log, test health → orientation summary |
+| `/standup` | Start of day | Generates Yesterday / Today / Blockers from real git data |
+| `/plan-feature` | Before any non-trivial change | Blast radius audit + risk matrix + phased plan with rollback steps |
+| `/adr` | After a significant architecture decision | Writes a numbered record to `docs/decisions/` — prevents re-litigating settled choices |
+| `/debug` | Something is broken | Structured loop: reproduce → read error → isolate → hypothesize → fix → verify |
+| `/self-review` | Before every commit | Tests → lint → security spot-check, loops until all green |
+| `/check-contracts` | After any API change | Audits `/contracts/` against implementation — flags drift and breaking changes |
+| `/smart-pr` | Ready to open a PR | Generates What / Why / How / Test plan / Risks from the actual diff |
+| `/review-pr` | Reviewing a branch | Code quality + convention check against CLAUDE.md |
+| `/design-review` | After UI implementation | Compares code against Figma designs (requires Figma MCP) |
+
+---
+
+## 🏗 Architecture
+
+### What gets created
 
 <details>
-<summary><b>Project layout</b> (click to expand)</summary>
+<summary><b>Full project layout</b> (click to expand)</summary>
 
 ```
 your-project/
-├── CLAUDE.md                          ← Project constitution (customize)
-├── .claudeignore                      ← Keep context clean (universal)
+├── CLAUDE.md                          ← Project constitution (customize this first)
+├── .claudeignore                      ← Keeps context window clean
 ├── .mcp.json                          ← External tool connections (customize)
-├── .claude/
-│   ├── agents/                        ← WHO does the work
-│   │   ├── architect.md               ← Universal (Opus, lead)
-│   │   ├── test-engineer.md           ← Universal (Sonnet)
-│   │   ├── security-reviewer.md       ← Universal (Haiku, read-only)
-│   │   ├── api-engineer.md            ← Customize per backend stack
-│   │   ├── frontend-engineer.md       ← Customize per frontend stack
-│   │   └── devops-engineer.md         ← Customize per infra
-│   ├── skills/                        ← WHAT they know
-│   │   ├── coding-standards/SKILL.md  ← Universal
-│   │   ├── api-design/SKILL.md        ← Universal
-│   │   ├── testing/SKILL.md           ← Universal
-│   │   ├── security-review/SKILL.md   ← Universal
-│   │   ├── design-system/SKILL.md     ← Customize per brand
-│   │   └── [domain-skills]/SKILL.md   ← Add per project
-│   ├── commands/                      ← HOW to trigger workflows
-│   │   ├── self-review.md             ← Universal (test → lint → security fix loop)
-│   │   ├── smart-pr.md                ← Universal (auto-generate PR description from diff)
-│   │   ├── standup.md                 ← Universal (daily status from git + TODOs + tests)
-│   │   ├── debug.md                   ← Universal (reproduce → isolate → fix → verify loop)
-│   │   ├── check-contracts.md         ← Universal (verify /contracts/ match implementations)
-│   │   ├── adr.md                     ← Universal (record architecture decisions to docs/decisions/)
-│   │   ├── onboard.md                 ← Universal (orient new dev/agent to this codebase)
-│   │   ├── review-pr.md               ← Universal
-│   │   ├── plan-feature.md            ← Universal (phased plan with rollback strategies)
-│   │   └── design-review.md           ← Universal
-│   └── hooks/                         ← WHEN to auto-verify
-│       ├── pre-commit.sh              ← Universal (auto-detects stack)
-│       └── post-edit.sh               ← Universal (auto-detects language)
-└── contracts/                         ← API specs, event schemas
+├── docs/
+│   └── decisions/                     ← Architecture Decision Records (/adr writes here)
+├── contracts/                         ← API specs and event schemas
+└── .claude/
+    ├── agents/                        ← WHO does the work
+    │   ├── architect.md               ← Universal · Opus · leads planning + impact analysis
+    │   ├── test-engineer.md           ← Universal · Sonnet
+    │   ├── security-reviewer.md       ← Universal · Haiku · read-only
+    │   ├── api-engineer.md            ← Customize per backend stack
+    │   ├── frontend-engineer.md       ← Customize per frontend stack
+    │   └── devops-engineer.md         ← Customize per infra
+    ├── skills/                        ← WHAT they know (auto-activate when relevant)
+    │   ├── coding-standards/SKILL.md  ← Universal
+    │   ├── api-design/SKILL.md        ← Universal
+    │   ├── testing/SKILL.md           ← Universal
+    │   ├── security-review/SKILL.md   ← Universal
+    │   ├── design-system/SKILL.md     ← Customize per brand
+    │   └── [domain-skills]/SKILL.md   ← Add per project
+    ├── commands/                      ← HOW to trigger workflows (the 10 slash commands)
+    └── hooks/                         ← WHEN to auto-verify
+        ├── pre-commit.sh              ← Blocks commit if lint or tests fail
+        └── post-edit.sh               ← Auto-formats files after every edit
 ```
 
 </details>
 
 ---
 
-## The 7-layer architecture
+### The 7-layer architecture
 
 | # | Layer | Responsibility | Type |
 |:-:|-------|----------------|:----:|
 | 1 | **You** | Define scope, review PRs, sign off on designs | Human |
-| 2 | **Design** | Cowork → Figma → Claude Code → back to Figma | Tools |
+| 2 | **Design** | Figma → Claude Code → back to Figma | Tools |
 | 3 | **CLAUDE.md** | Tech stack, conventions, guardrails | Customize |
 | 4 | **Agents** | 3 universal + 3 customizable subagents | Mixed |
-| 5 | **Skills** | 4 universal + domain-specific knowledge | Mixed |
-| 6 | **Automation** | Commands, hooks, settings, permissions | Universal |
-| 7 | **External** | MCP servers, plugins, CI, headless mode | Customize |
+| 5 | **Skills** | 5 universal + domain-specific knowledge | Mixed |
+| 6 | **Automation** | 10 commands + 2 hooks + settings | Universal |
+| 7 | **External** | MCP servers, CI, headless mode | Customize |
+
+---
 
 ### Scaling levels — same framework, different throttle
 
@@ -230,7 +282,7 @@ your-project/
 
 ---
 
-## Examples
+## 💡 Examples
 
 <details>
 <summary><b>E-commerce platform</b></summary>
@@ -267,46 +319,44 @@ Deploy on company K3s cluster."
 <summary><b>Legacy Django REST API migration</b></summary>
 
 ```bash
-bash migrate.sh --standard --dir /path/to/your/django-api
+bash migrate.sh --dir /path/to/your/django-api
 ```
 
-See the full scenario (pain points, expected output, phase-by-phase breakdown) in [`examples/legacy-django-api.md`](./examples/legacy-django-api.md).
+See the full scenario in [`examples/legacy-django-api.md`](./examples/legacy-django-api.md).
 
 </details>
 
 Working requirement files live in [`examples/`](./examples):
 - New project: `bash generate.sh --from examples/ecommerce-sme.md`
-- Existing project: `bash migrate.sh --from examples/legacy-django-api.md` *(as a reference — point `--dir` at your actual repo)*
+- Existing project: see `examples/legacy-django-api.md` *(point `--dir` at your actual repo)*
 
 ---
 
-## Adding domain skills manually
+## ➕ Adding domain skills
 
 ```bash
-mkdir -p .claude/skills/my-domain
-cat > .claude/skills/my-domain/SKILL.md << 'EOF'
+mkdir -p .claude/skills/payments
+cat > .claude/skills/payments/SKILL.md << 'EOF'
 ---
-name: my-domain
-description: When to auto-activate this skill
+name: payments
+description: Auto-activates when working on payment flows, billing, or Stripe integration
 ---
-# My domain rules
-- Business rule 1
-- Business rule 2
-- Integration pattern
-- Edge cases to watch for
+# Payment rules
+- Always use idempotency keys on Stripe charges
+- Never log full card numbers or CVVs — mask to last 4 digits
+- Webhook handlers must verify signature before processing
+- Refund logic lives in PaymentService, never in controllers
 EOF
 ```
 
 ---
 
----
-
-## FAQ
+## ❓ FAQ
 
 <details>
 <summary><b>Does this work with my stack?</b></summary>
 
-Yes. The universal pieces (plan mode, commit conventions, hooks, testing skill) are stack-agnostic. Agents and domain skills are generated or customized for your specific tech stack.
+Yes. The universal pieces (plan mode, commit conventions, hooks, testing skill) are stack-agnostic. Agents and domain skills are generated or customized for your specific tech stack by `generate.sh` or `migrate.sh`.
 
 </details>
 
@@ -320,23 +370,32 @@ You need access to Claude Code — any plan that includes it will work. Higher s
 <details>
 <summary><b>Can I use this on an existing codebase?</b></summary>
 
-Yes — and there's a dedicated path for it. Run `migrate.sh` instead of `setup.sh`. It scans your repo, generates a framework that reflects what your code actually does today (not aspirational guardrails), and produces a `MIGRATION_PLAN.md` with a prioritized gap report and phased roadmap.
+Yes — run `migrate.sh` instead of `setup.sh`. The key difference: the generated CLAUDE.md describes your current reality. Gaps between current state and best practices are surfaced in `MIGRATION_PLAN.md` rather than baked into guardrails the codebase can't follow yet.
 
-Key difference from `setup.sh`: the generated CLAUDE.md describes your current reality. Gaps between current state and best practices are surfaced in `MIGRATION_PLAN.md` rather than baked into guardrails the codebase can't follow yet.
+Patterns consistent across 3+ files are treated as deliberate conventions, not gaps — so you won't get a gap report telling you to change how your team already works.
+
+</details>
+
+<details>
+<summary><b>What's the difference between agents, skills, and commands?</b></summary>
+
+- **Agents** (`/agents`) — *who* does the work. Specialized subagents with a defined role, toolset, and workflow (architect, api-engineer, etc.). Invoked by Claude when delegating tasks.
+- **Skills** (`/skills`) — *what* they know. Compact knowledge files that auto-activate based on context. An api-engineer automatically loads the `api-design` skill; a frontend task loads `design-system`.
+- **Commands** (`/commands`) — *how* to trigger workflows. The 10 slash commands you type directly: `/plan-feature`, `/self-review`, `/debug`, etc.
 
 </details>
 
 <details>
 <summary><b>How do I keep the context window clean?</b></summary>
 
-Use `/compact` in long sessions, keep agent files under 50 lines and skill files under 100 lines, and rely on `.claudeignore` to exclude build artifacts and lockfiles.
+Use `/compact` in long sessions. Keep agent files under 50 lines and skill files under 100 lines. `.claudeignore` excludes build artifacts and lockfiles automatically.
 
 </details>
 
 <details>
 <summary><b>Is it safe to run agents autonomously?</b></summary>
 
-The defaults favor plan-first, test-before-commit workflows. For headless / CI modes, review permissions in `.claude/settings.json` and add repo-specific guardrails before granting write access.
+The defaults favor plan-first, test-before-commit workflows. The architect agent runs in `plan` permission mode — it shows a plan and waits for approval before implementing. For headless / CI modes, review permissions in `.claude/settings.json` before granting write access.
 
 </details>
 
@@ -347,10 +406,8 @@ The defaults favor plan-first, test-before-commit workflows. For headless / CI m
 Contributions are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before you start.
 
 Guidelines in brief:
-
-- Keep universal files universal
-- Agent files under **50 lines**
-- Skill files under **100 lines**
+- Keep universal files universal — no stack-specific logic in base agents or skills
+- Agent files under **50 lines**, skill files under **100 lines**
 - Follow Conventional Commits (`feat:`, `fix:`, `refactor:`, …)
 
 ---
@@ -363,8 +420,8 @@ Guidelines in brief:
 
 ---
 
-**Built with care by [KoolekLabs](https://github.com/KoolekLabs)
+**Built with care by [KoolekLabs](https://github.com/KoolekLabs)**
 
-If this saved you time, consider giving the repo a star.
+If this saved you time, consider giving the repo a ⭐
 
 </div>
