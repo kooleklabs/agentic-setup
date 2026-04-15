@@ -469,19 +469,49 @@ skills:
 
 You are a senior DevOps engineer. Your workflow:
 
-1. READ existing infra configs before adding new ones
-2. FOLLOW the project's deployment patterns
-3. IMPLEMENT infrastructure-as-code (Dockerfiles, manifests, CI configs)
-4. VERIFY all configs are valid before committing
-5. TEST deployment in staging before production
+1. READ existing infra configs before adding new ones — check 2-3 similar files first
+2. FOLLOW the project's deployment patterns (check CI configs, Dockerfiles, manifests)
+3. IMPLEMENT infrastructure-as-code; all changes must be reversible
+4. VALIDATE configs before committing (lint YAML, validate Dockerfile, dry-run CI)
+5. TEST in staging before production — never change prod without a verified staging run
+
+## CI/CD standards
+- Fail fast: lint and unit tests first, integration tests after, deploy last
+- Cache aggressively: deps, build artifacts, Docker layers
+- Every pipeline step must have a clear failure message — no silent failures
+- Deployment only triggers on passing tests — never bypass
+- Rollback must be a single command: git revert + push, or image tag repin
+
+## Docker standards
+- Multi-stage builds: builder stage then minimal runtime image
+- Non-root user in final stage (USER appuser)
+- No secrets in image layers — use runtime env vars or secret mounts
+- Pin base image versions (node:20-alpine, not node:latest)
+- .dockerignore excludes: node_modules/, .git/, *.env, test files
+
+## Zero-downtime deployment checklist
+- Health check endpoint exists and returns 200 when ready
+- Graceful shutdown: drain connections before stopping (SIGTERM handler)
+- DB migrations run before new code deploys (never after)
+- Feature flags for risky changes — dark launch before full rollout
+- Readiness probe != liveness probe — configure both separately
+
+## Secret management
+- Secrets in env vars, secret managers (Vault, AWS SSM, Doppler), never in code
+- Rotate secrets on every suspected exposure — don't wait to confirm
+- CI secrets: use platform secret store, never print to logs
+
+## Observability minimum
+- Structured logs (JSON) with: timestamp, level, service, trace_id, message
+- Health check: GET /health returns { status: "ok", version: "...", uptime: N }
+- Metrics: request rate, error rate, p50/p95/p99 latency
+- Alerts on: error rate spike, p99 latency breach, disk/memory thresholds
 
 ## Rules
-- Never hardcode secrets — use environment variables or secret managers
-- Dockerfiles: multi-stage builds, non-root user, minimal base image
-- CI/CD: fail fast, cache dependencies, run tests before deploy
-- All infrastructure changes must be reversible
-- Monitor: health checks, logging, alerting on all services
-- Document deployment steps in README or DEPLOY.md
+- Every infra change must be reversible — document the rollback in the PR
+- No manual prod changes — everything through IaC or CI/CD pipeline
+- Never expose internal errors or stack traces in production responses
+- All services behind health checks before receiving traffic
 EOF
 log_create "devops-engineer.md (customize per infra)"
 
@@ -543,10 +573,10 @@ description: REST API design patterns. Auto-activates when building API endpoint
 # API design patterns
 
 ## URL structure
-- Nouns for resources: /users, /sessions, /quizzes
+- Nouns for resources: /users, /orders, /products
 - Plural form: /users not /user
-- Nested for ownership: /users/:id/sessions
-- Query params for filtering: /sessions?status=completed&level=tajweed
+- Nested for ownership: /users/:id/orders
+- Query params for filtering: /orders?status=completed&type=subscription
 - Max 3 levels of nesting
 
 ## HTTP methods
@@ -1130,6 +1160,178 @@ Output in this format:
 EOF
 log_create "check-contracts.md (universal)"
 
+# --- /adr (UNIVERSAL) ---
+cat > .claude/commands/adr.md << 'EOF'
+---
+description: Record an Architecture Decision. Captures the context, options considered, decision made, and consequences in docs/decisions/. Prevents re-litigating settled choices in future sessions.
+---
+
+Create an Architecture Decision Record (ADR) for a significant technical decision:
+
+## Step 1 — Gather context
+- What problem or question triggered this decision?
+- What constraints apply (time, budget, team skills, existing stack, compliance)?
+- What is the current state — what exists today?
+
+## Step 2 — List options considered
+For each option (aim for 2-4):
+- What is it?
+- Pros, cons, and why it was or wasn't chosen
+
+## Step 3 — State the decision clearly
+One unambiguous sentence: "We will use X for Y because Z."
+
+## Step 4 — Document consequences
+- What becomes easier? What becomes harder?
+- What follow-up decisions does this create?
+- What is the trigger to revisit (e.g., "if throughput exceeds 10k req/s")?
+
+## Step 5 — Write the ADR file
+
+Determine the next ADR number:
+```bash
+ls docs/decisions/ 2>/dev/null | grep "^[0-9]" | sort -n | tail -1
+```
+
+Create docs/decisions/NNNN-<slug>.md:
+
+```markdown
+# NNNN — [Title]
+
+**Date:** YYYY-MM-DD
+**Status:** Accepted
+**Deciders:** [who was involved]
+
+## Context
+[The problem and constraints that forced a decision]
+
+## Options considered
+
+### Option A: [name]
+- **Pros:** ...
+- **Cons:** ...
+
+### Option B: [name]
+- **Pros:** ...
+- **Cons:** ...
+
+## Decision
+[One clear sentence: "We will use X for Y because Z."]
+
+## Consequences
+- **Easier:** ...
+- **Harder:** ...
+- **Follow-up decisions:** ...
+- **Revisit when:** ...
+```
+
+## Step 6 — Commit
+```bash
+mkdir -p docs/decisions
+git add docs/decisions/NNNN-<slug>.md
+git commit -m "docs: add ADR NNNN — [title]"
+```
+
+## Rules
+- Status lifecycle: Proposed → Accepted → Superseded by NNNN (never delete old ADRs)
+- When a decision is reversed, create a NEW ADR and update the old one's status
+- One decision per ADR — two choices means two ADRs
+- Write for someone with zero context on this codebase
+EOF
+log_create "adr.md (universal)"
+
+# --- /onboard (UNIVERSAL) ---
+cat > .claude/commands/onboard.md << 'EOF'
+---
+description: Orient a new developer or fresh agent session to this codebase. Scans project constitution, architecture decisions, recent activity, and health checks to produce a structured orientation summary.
+---
+
+Produce an orientation summary for this codebase. Read in this order — flag anything missing or broken.
+
+## Step 1 — Project identity
+Read CLAUDE.md (or README.md if absent):
+- What does this project do?
+- What is the tech stack?
+- What are the build, test, lint, and run commands?
+- What guardrails are in place?
+
+## Step 2 — Architecture decisions
+```bash
+ls docs/decisions/ 2>/dev/null | sort -n | tail -10
+```
+Read the 3 most recent ADRs. Summarise the key standing decisions.
+If no docs/decisions/ exists → note as a gap.
+
+## Step 3 — Codebase layout
+```bash
+find . -maxdepth 3 -type d \
+  ! -path "*/node_modules/*" ! -path "*/.git/*" \
+  ! -path "*/dist/*" ! -path "*/__pycache__/*" \
+  ! -path "*/.worktrees/*"
+```
+Identify: entry points, domain modules, test directories, config files.
+
+## Step 4 — Recent activity
+```bash
+git log --oneline -15
+git branch -a | grep -v HEAD | head -10
+```
+
+## Step 5 — Current health
+Run the test suite and linter. Report: passing / failing / not configured.
+```bash
+git status --short
+git stash list
+```
+
+## Step 6 — Contracts and integrations
+```bash
+ls contracts/ 2>/dev/null
+cat .mcp.json 2>/dev/null || true
+```
+
+## Step 7 — Write the orientation summary
+
+```
+## Codebase Orientation — [project name]
+
+### What it does
+[1-2 sentences]
+
+### Stack
+[Language, framework, DB, infra — one line each]
+
+### Key commands
+- Build:  [command]
+- Test:   [command]
+- Lint:   [command]
+- Run:    [command]
+
+### Architecture (from ADRs)
+- [Key decision 1]
+- [Key decision 2]
+
+### Recent activity
+- [Last 3-5 meaningful commits summarised]
+- Active branches: [list]
+
+### Health
+- Tests: [passing N | failing N | not configured]
+- Lint:  [clean | N errors | not configured]
+- Uncommitted changes: [yes/no — details]
+
+### Gaps to be aware of
+- [Missing ADRs / missing tests / missing contracts / etc.]
+```
+
+## Rules
+- Read actual files — do not guess or invent project details
+- Flag every gap (no tests, no ADRs, no contracts) — don't silently skip them
+- If tests fail during onboarding, list the failures — this is important context
+- Keep the summary scannable: bullets over paragraphs, facts over adjectives
+EOF
+log_create "onboard.md (universal)"
+
 # ============================================================
 # HOOKS — Layer 6
 # ============================================================
@@ -1333,7 +1535,7 @@ echo -e "  ├── .mcp.json              ${YELLOW}← add your MCP servers${N
 echo -e "  ├── .claude/"
 echo -e "  │   ├── agents/            (6 agents: 3 universal + 3 customizable)"
 echo -e "  │   ├── skills/            (5 skills: 4 universal + 1 customizable)"
-echo -e "  │   ├── commands/          (8 universal commands)"
+echo -e "  │   ├── commands/          (10 universal commands)"
 echo -e "  │   ├── hooks/             (2 universal hooks)"
 echo -e "  │   └── settings.json"
 echo -e "  └── contracts/"

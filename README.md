@@ -192,6 +192,8 @@ your-project/
 │   │   ├── standup.md                 ← Universal (daily status from git + TODOs + tests)
 │   │   ├── debug.md                   ← Universal (reproduce → isolate → fix → verify loop)
 │   │   ├── check-contracts.md         ← Universal (verify /contracts/ match implementations)
+│   │   ├── adr.md                     ← Universal (record architecture decisions to docs/decisions/)
+│   │   ├── onboard.md                 ← Universal (orient new dev/agent to this codebase)
 │   │   ├── review-pr.md               ← Universal
 │   │   ├── plan-feature.md            ← Universal (phased plan with rollback strategies)
 │   │   └── design-review.md           ← Universal

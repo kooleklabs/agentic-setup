@@ -6,10 +6,10 @@ description: REST API design patterns. Auto-activates when building API endpoint
 # API design patterns
 
 ## URL structure
-- Nouns for resources: /users, /sessions, /quizzes
+- Nouns for resources: /users, /orders, /products
 - Plural form: /users not /user
-- Nested for ownership: /users/:id/sessions
-- Query params for filtering: /sessions?status=completed&level=tajweed
+- Nested for ownership: /users/:id/orders
+- Query params for filtering: /orders?status=completed&type=subscription
 - Max 3 levels of nesting
 
 ## HTTP methods
