@@ -3,6 +3,37 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] — 2026-04-16
+
+### Added
+
+- **Architecture Design Gate.** After `generate` scaffolds the framework, an architect agent (Opus) automatically produces a full system design before any feature code is written.
+  - Outputs: `docs/architecture.md` (`## Backend` / `## Frontend` / `## Integration` / `## Acceptance Criteria` — all required), `docs/decisions/NNN-*.md` ADRs (one per non-obvious decision), `contracts/api-spec.yaml` (real OpenAPI 3.x, not a stub), and optionally `.claude/skills/[domain]/SKILL.md` when a clear primary domain exists.
+  - Validation + single retry: the gate asserts required sections, valid OpenAPI YAML, and at least one real ADR; if incomplete, a targeted retry lists the gaps. Partial files are preserved on hard failure.
+  - Review is file-based — edit in your IDE, then `git add docs/ contracts/ && git commit` is the approval.
+- **`--skip-architecture`** flag on `generate` — opt out of the gate for re-runs or when you already have a design.
+- **`--from-analysis`** flag on `generate` — migration path, gate is auto-skipped.
+- **Auto-skip** when `docs/architecture.md` already exists — resume-safe, won't overwrite your design.
+- New modules: `lib/architect-prompt.js` (pure prompt builder), `lib/validate-outputs.js` (YAML + section validation), `lib/architect-gate.js` (orchestrator with skip/retry/banner logic).
+- `.claude/agents/architect.md` now supports two modes: Design Gate Mode (produces system design) and Plan Review Mode (existing `/plan-feature` behaviour). `permissionMode: plan` is retained so `/plan-feature` keeps its safety net; Design Gate Mode programmatically overrides via SDK options.
+
+### Changed
+
+- New runtime dependency: `js-yaml` (~15 KB) for OpenAPI validation inside the gate.
+- `lib/generate.js` lazy-loads `architect-gate.js` inside `main()` so `generate --help` and non-gate paths don't require runtime deps.
+- CI `verify` smoke now asserts `--skip-architecture` and `--from-analysis` are documented in `generate --help`.
+
+### Tested
+
+- 92 unit tests across 8 suites, including 24 new tests for the gate (prompt builder, validator, orchestrator with skip/retry/failure/SDK-error/SIGINT paths).
+- End-to-end real-SDK test pre-release (manual): `generate --idea "minimal TODO app with auth…"` produced a valid `architecture.md` (all 4 required sections), 5 ADRs, and `api-spec.yaml` with 7 paths and 4 schemas — no retry needed.
+
+### Notes
+
+Phase 1 of the [autonomous orchestrator roadmap](docs/ROADMAP.md) is now **complete** with v2.5 (Stability) + v2.6 (Architecture Gate). Phase 2 — GitHub-native automation — is next.
+
+---
+
 ## [2.5.0] — 2026-04-16
 
 ### Added

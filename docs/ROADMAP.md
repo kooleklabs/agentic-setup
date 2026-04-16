@@ -21,8 +21,8 @@ Transform `@kooleklabs/agentic-app` from a one-shot scaffolding CLI into a fully
 
 ---
 
-## Phase 1 — Stability + Full Architecture Design Gate `v2.5 / v2.6`
-**Estimated: 2–3 weeks** — Part A shipped as v2.5.0 (2026-04-16); Part B lands as v2.6.
+## Phase 1 — Stability + Full Architecture Design Gate `v2.5 / v2.6` ✅ Complete
+**Shipped 2026-04-16.** Part A (stability) in v2.5.0; Part B (architecture design gate) in v2.6.0.
 
 ### Part A — Framework Stability ✅ Shipped in v2.5.0
 
