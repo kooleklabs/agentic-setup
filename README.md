@@ -321,7 +321,36 @@ Once the framework is installed, slash commands inside Claude Code drive your da
 
 ## 🎬 Example session — from requirement to PR
 
-Once the framework is installed, here's what a real session looks like inside Claude Code. This example assumes you've already run `generate` for an e-commerce project (Next.js + Go Fiber + PostgreSQL).
+Here's what a real session looks like end-to-end for an e-commerce project (Next.js + Go Fiber + PostgreSQL). We start at `generate`, then show the daily workflow.
+
+### 0. Generate — framework + architecture
+
+```
+$ npx @kooleklabs/agentic-app generate --from proposal.docx
+
+[✓] Reading requirement from: proposal.docx
+[✓] Running base framework setup…          ← setup.sh scaffolds .claude/, CLAUDE.md, .mcp.json
+[✓] Customizing framework for your stack…  ← Sonnet: stack-specific agents/skills
+
+▶ Architecture Design Gate                 ← new in v2.6
+  Producing system design before any feature code is written…
+
+  [0:32] → Write docs/architecture.md
+  [1:48] → Write contracts/api-spec.yaml
+  [2:14] → Write docs/decisions/001-auth-approach.md
+  [2:35] → Write docs/decisions/002-datastore.md
+  [3:02] → Write docs/decisions/003-payment-provider.md
+
+✓ Architecture design complete. Review these files:
+  docs/architecture.md
+  docs/decisions/
+  contracts/api-spec.yaml
+
+When you're happy with the design, commit it:
+  git add docs/ contracts/ && git commit -m "design: initial architecture"
+```
+
+Review the files in your IDE, edit if needed, commit when satisfied. The `git commit` is the approval — no separate step. Skip with `--skip-architecture` if you have a design already.
 
 ### 1. Orient (first session)
 
