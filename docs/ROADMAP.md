@@ -3,6 +3,11 @@
 **Status:** Approved
 **Scope:** `@kooleklabs/agentic-app` — Full roadmap from v2.4.1 to autonomous orchestrator
 
+**Tracking:**
+- 📋 [Project board](https://github.com/orgs/kooleklabs/projects/1) — visual status across all phases
+- 🎯 [Milestones](https://github.com/kooleklabs/agentic-setup/milestones) — per-phase progress with linked issues
+- 📝 [Design documents](./designs/) — specs + implementation plans per release
+
 ---
 
 ## What We're Building
