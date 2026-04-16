@@ -475,6 +475,11 @@ rm "$PHASE3_PROMPT"
 
 log_step "Migration plan written to: ${BOLD}MIGRATION_PLAN.md${NC}"
 
+# Ensure hooks are executable — defends against npm-pack / umask edge cases
+if [ -d ".claude/hooks" ]; then
+  find .claude/hooks -name "*.sh" -type f -exec chmod +x {} +
+fi
+
 # ============================================================
 # Summary
 # ============================================================
