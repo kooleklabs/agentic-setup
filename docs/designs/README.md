@@ -26,6 +26,7 @@ Date is when the document was written. The document itself stays accurate; newer
 ### v2.7 — Architecture → GitHub Bridge (in design)
 
 - [`2026-04-16-v2.7-design-spec.md`](./2026-04-16-v2.7-design-spec.md) — approved design for the `push-architecture` command that creates Milestone + feature Issues + umbrella Issue from v2.6's design artefacts. Bridges Phase 1 output to Phase 2 input.
+- [`2026-04-16-v2.7-plan.md`](./2026-04-16-v2.7-plan.md) — implementation plan (9 tasks across 4 chunks, TDD-driven, ~105+ tests total)
 
 ## Relationship to `docs/superpowers/`
 
