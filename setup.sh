@@ -1625,6 +1625,61 @@ EOF
 log_create "contracts/README.md"
 
 # ============================================================
+# docs/decisions/ — ADR scaffold
+# ============================================================
+log_step "Creating docs/decisions directory..."
+
+mkdir -p docs/decisions
+
+cat > docs/decisions/README.md << 'EOF'
+# Architecture Decision Records
+
+Significant technical decisions live here as numbered markdown files.
+
+- Filename pattern: `NNNN-<kebab-case-title>.md` (e.g. `0001-use-postgres.md`)
+- Use the `/adr` slash command to create a new one
+- See `000-template.md` for the template structure
+- Status lifecycle: Proposed → Accepted → Superseded
+
+Never delete an ADR. When a decision is reversed, create a new ADR and update the old one's status to "Superseded by NNNN".
+EOF
+log_create "docs/decisions/README.md"
+
+cat > docs/decisions/000-template.md << 'EOF'
+# NNNN — [Title]
+
+**Date:** YYYY-MM-DD
+**Status:** Proposed
+**Deciders:** [who was involved]
+
+## Context
+
+[The problem and the constraints that forced a decision]
+
+## Options considered
+
+### Option A: [name]
+- **Pros:** ...
+- **Cons:** ...
+
+### Option B: [name]
+- **Pros:** ...
+- **Cons:** ...
+
+## Decision
+
+[One clear sentence: "We will use X for Y because Z."]
+
+## Consequences
+
+- **Easier:** ...
+- **Harder:** ...
+- **Follow-up decisions:** ...
+- **Revisit when:** ...
+EOF
+log_create "docs/decisions/000-template.md"
+
+# ============================================================
 # .gitignore additions
 # ============================================================
 log_step "Adding framework entries to .gitignore..."
