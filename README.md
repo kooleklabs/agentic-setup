@@ -35,6 +35,7 @@ A batteries-included framework that turns **any codebase into an agent-ready wor
 | **Greenfield or legacy** | New project or 10-year-old codebase, both are first-class via `generate` / `migrate` |
 | **Autonomous or guided** | Default: agent makes reasonable choices. `--interactive` pauses for clarification |
 | **Cost-aware** | Every run ends with token counts + USD estimate |
+| **Tested + linted** | Jest covers `lib/`, ESLint enforces style, CI gates every PR (v2.5+) |
 | **Transparent** | Every agent, skill, and hook is a plain Markdown file you own and can edit |
 
 ---
@@ -255,8 +256,6 @@ CLAUDE_PRICE_INPUT=2.5 CLAUDE_PRICE_OUTPUT=12 npx @kooleklabs/agentic-app genera
 
 ## 🗓 Daily workflow
 
-![Daily workflow](./docs/infographic-daily-workflow.svg)
-
 Once the framework is installed, slash commands inside Claude Code drive your daily work:
 
 | Command | When to use | What it does |
@@ -271,6 +270,13 @@ Once the framework is installed, slash commands inside Claude Code drive your da
 | `/smart-pr` | Ready to open a PR | Generates What / Why / How / Test plan / Risks from the actual diff |
 | `/review-pr` | Reviewing a branch | Code quality + convention check against `CLAUDE.md` |
 | `/design-review` | After UI implementation | Compares code against Figma designs (requires Figma MCP) |
+
+<details>
+<summary><b>Visual summary</b> (click to expand)</summary>
+
+![Daily workflow](./docs/infographic-daily-workflow.svg)
+
+</details>
 
 ---
 
@@ -661,7 +667,16 @@ Guidelines in brief:
 - Keep universal files universal — no stack-specific logic in base agents or skills
 - Agent files under **50 lines**, skill files under **100 lines**
 - Follow Conventional Commits (`feat:`, `fix:`, `refactor:`, …)
-- All PRs must pass CI (syntax + shellcheck + `init` smoke test)
+- All PRs must pass CI (lint + test matrix + shellcheck + `init` smoke test)
+
+Local checks before you push:
+
+```bash
+npm install              # install dev dependencies (package-lock.json is gitignored)
+npm test                 # run the Jest suite
+npm run lint             # eslint bin/ lib/
+npm run test:coverage    # verify coverage thresholds
+```
 
 See [RELEASING.md](./RELEASING.md) for how new versions reach npm.
 
