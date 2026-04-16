@@ -24,6 +24,11 @@ Transform `@kooleklabs/agentic-app` from a one-shot scaffolding CLI into a fully
 ## Phase 1 — Stability + Full Architecture Design Gate `v2.5 / v2.6` ✅ Complete
 **Shipped 2026-04-16.** Part A (stability) in v2.5.0; Part B (architecture design gate) in v2.6.0.
 
+**Design documents:**
+- [Phase 1 design spec](./designs/2026-04-16-phase-1-design-spec.md) — approved design covering both v2.5 and v2.6
+- [v2.5 implementation plan](./designs/2026-04-16-v2.5-plan.md) — 14 tasks, TDD-driven
+- [v2.6 implementation plan](./designs/2026-04-16-v2.6-plan.md) — 8 tasks, real-SDK E2E gated
+
 ### Part A — Framework Stability ✅ Shipped in v2.5.0
 
 - Test suite (Jest) for `lib/` — unit tests for `generate.js`, `migrate.js`, `claude-runner.js`, `render.js`
