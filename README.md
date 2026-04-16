@@ -274,6 +274,106 @@ Once the framework is installed, slash commands inside Claude Code drive your da
 
 ---
 
+## 🎬 Example session — from requirement to PR
+
+Once the framework is installed, here's what a real session looks like inside Claude Code. This example assumes you've already run `generate` for an e-commerce project (Next.js + Go Fiber + PostgreSQL).
+
+### 1. Orient (first session)
+
+```
+You:   /onboard
+
+Claude: Scanned CLAUDE.md, 3 ADRs, 47 commits.
+        Stack: Next.js + Go Fiber + PostgreSQL + Redis.
+        Test suite: 142 passing, 0 failing.
+        Last activity: payment webhook handler merged 2 days ago.
+        You're up to speed.
+```
+
+### 2. Plan a feature
+
+```
+You:   /plan-feature
+       Add team workspaces — users can create a team, invite members
+       by email, and share projects with the team.
+
+Claude (architect):
+       Blast radius: `users` module imported by 8 files (HIGH),
+       `projects` by 5 files.
+
+       | Change                      | Risk   | Mitigation                          |
+       |-----------------------------|--------|-------------------------------------|
+       | New `teams` table           | HIGH   | Reversible migration with `down`    |
+       | New `/teams` endpoints      | LOW    | Additive, no existing callers       |
+       | Modify `projects` ownership | MEDIUM | Keep backward compat, dual-write    |
+
+       Phase 1: Migration — `teams`, `team_members` tables + down migration
+       Phase 2: Team service + invite endpoint + email trigger
+       Phase 3: Project sharing — add `team_id` FK, update queries
+       Phase 4: Tests — unit + integration for invite flow
+
+       Each phase has named rollback. Approve to proceed?
+
+You:   approved
+```
+
+### 3. Architect delegates automatically
+
+Claude dispatches each phase to the right subagent:
+
+```
+Phase 1 → api-engineer (writes migration + down migration)
+Phase 2 → api-engineer + security-reviewer (invite tokens are auth-sensitive)
+Phase 3 → api-engineer (updates project queries)
+Phase 4 → test-engineer (writes unit + integration tests)
+```
+
+Each phase leaves the codebase in a working state. If Phase 3 fails, you roll it back without losing Phases 1–2.
+
+### 4. Record the decision
+
+```
+You:   /adr
+       We chose to add a `team_id` FK to projects instead of a join table
+       because projects belong to exactly one team. Rejected: RBAC system
+       (overkill for v1 — team owner vs member is sufficient).
+
+Claude: → Written to docs/decisions/0004-team-project-ownership.md
+```
+
+### 5. Verify and ship
+
+```
+You:   /self-review
+
+Claude: Running tests… 156/156 passing.
+        Running lint… clean.
+        Security spot-check… no issues.
+        All green.
+
+You:   /smart-pr
+
+Claude: ## Add team workspaces with email invites
+
+        **Summary**
+        - New `teams` and `team_members` tables with reversible migration
+        - CRUD endpoints for team management + email invite flow
+        - Projects can be assigned to a team via `team_id` FK
+        - 14 new tests covering invite tokens, sharing, and permissions
+
+        **Test plan**
+        - [x] Unit tests for team service (create, invite, remove)
+        - [x] Integration test for full invite-accept flow
+        - [x] Verified migration up + down
+
+        **Risks**
+        - `projects` table gains a nullable FK — existing projects unaffected
+```
+
+The full cycle: **orient → plan → approve → build → record decisions → verify → ship**.
+
+---
+
 ## 🏗 What gets created
 
 <details>
