@@ -64,7 +64,7 @@ Examples:
 Docs: https://github.com/kooleklabs/agentic-setup
 `;
 
-function parseTarget(args) {
+function _parseTarget(args) {
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--target' && args[i + 1]) {
       const val = args[i + 1].toLowerCase();

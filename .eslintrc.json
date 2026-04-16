@@ -11,6 +11,7 @@
       "asyncArrow": "always"
     }],
     "semi": ["error", "always"],
-    "comma-dangle": "off"
+    "comma-dangle": "off",
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }]
   }
 }
