@@ -201,6 +201,45 @@ Use this when you don't have a PRD yet and want to fill in `CLAUDE.md` yourself.
 
 </details>
 
+### Architecture Design Gate (v2.6+)
+
+After `generate` scaffolds the framework, an architect agent automatically produces a full system design — **before any feature code is written**.
+
+**What the architect produces:**
+
+- `docs/architecture.md` — ERD, user flows, wireframes, acceptance criteria, E2E scenarios
+- `docs/decisions/001-*.md` — one ADR per key decision (auth, datastore, state management)
+- `contracts/api-spec.yaml` — real OpenAPI 3.x (every endpoint, every schema — not a stub)
+- `.claude/skills/[domain]/SKILL.md` — calibrated domain skill when the project has a clear primary domain
+
+**Flow:**
+
+```
+generate --idea "..."
+  ↓ scaffold framework
+  ↓ Architecture Design Gate (architect agent, Opus)
+  ↓ validate outputs → retry once if incomplete
+  ↓ review banner with file paths
+```
+
+**Review is file-based — no special command:**
+
+After the gate succeeds, review the generated files in your IDE. When you're happy, commit:
+
+```bash
+git add docs/ contracts/ && git commit -m "design: initial architecture"
+```
+
+The git commit is the approval. Edit the files freely before committing.
+
+**Skipping the gate:**
+
+| Flag / condition | Effect |
+|---|---|
+| `--skip-architecture` | Skip the gate entirely (for re-runs or when you have a design already) |
+| `--from-analysis` | Migration path — skip gate, the analysis is already done |
+| `docs/architecture.md` exists | Auto-skip (resume-safe — won't overwrite your design) |
+
 ---
 
 ## 💬 Interactive mode

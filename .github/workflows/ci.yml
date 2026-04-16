@@ -120,6 +120,14 @@ jobs:
           done
           echo "init smoke test passed"
 
+      - name: Smoke test — generate --help documents --skip-architecture
+        run: |
+          node "$GITHUB_WORKSPACE/bin/cli.js" generate --help | grep -q -- "--skip-architecture" \
+            || { echo "::error::--skip-architecture flag not documented in generate --help"; exit 1; }
+          node "$GITHUB_WORKSPACE/bin/cli.js" generate --help | grep -q -- "--from-analysis" \
+            || { echo "::error::--from-analysis flag not documented in generate --help"; exit 1; }
+          echo "architecture-gate flag smoke passed"
+
   shellcheck:
     name: shellcheck
     runs-on: ubuntu-latest
