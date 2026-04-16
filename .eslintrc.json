@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "env": { "node": true, "es2022": true, "jest": true },
+  "extends": ["standard"],
+  "parserOptions": { "ecmaVersion": "latest", "sourceType": "script" },
+  "rules": {
+    "no-console": "off",
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
+    "semi": ["error", "always"],
+    "comma-dangle": "off"
+  }
+}
