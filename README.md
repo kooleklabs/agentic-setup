@@ -681,7 +681,7 @@ Defaults favor plan-first, test-before-commit workflows. The architect agent run
 
 | Phase | Version | What ships | Status |
 |:-----:|---------|------------|:------:|
-| **1** | `v2.5` | Stability (tests, lint, auto-chmod) + **Architecture Design Gate** — architect agent produces full system design (ERD, OpenAPI, UI/UX wireframes, acceptance criteria) before any code is written | 🔨 Up next |
+| **1** | `v2.5` + `v2.6` | Stability (tests, lint, auto-chmod) + **Architecture Design Gate** — architect agent produces full system design (ERD, OpenAPI, UI/UX wireframes, acceptance criteria) before any code is written | ✅ Shipped 2026-04-16 |
 | **2** | `v3.0` | **GitHub-Native Automation** — Issues → auto plan → agents execute → PR opened → CI gates → board synced | 📋 Planned |
 | **3** | `v3.5` | **Master Orchestrator Engine** — `orchestrate --goal "..."` decomposes goals into GitHub Issues, sequences them, assigns agents | 📋 Planned |
 | **4** | `v4.0` | **Parallel Multi-Agent Factory** — Architect + Coder teams + Security + Tester run simultaneously with a self-review loop | 📋 Planned |
@@ -709,7 +709,7 @@ Every decision is logged. Every pattern is remembered. The framework gets better
 
 </details>
 
-Full design spec: [`docs/ROADMAP.md`](./docs/ROADMAP.md)
+**Tracking:** [📋 Project board](https://github.com/orgs/kooleklabs/projects/1) · [🎯 Milestones](https://github.com/kooleklabs/agentic-setup/milestones) · [📝 Design docs](./docs/designs/) · [Full roadmap](./docs/ROADMAP.md)
 
 ---
 
