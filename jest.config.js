@@ -8,5 +8,13 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text-summary', 'lcov'],
-  // Thresholds enabled in Task 7 after tests exist
+  // Starting thresholds — raise these as coverage improves. Do NOT lower.
+  coverageThreshold: {
+    global: {
+      lines: 50,
+      branches: 40,
+      functions: 45,
+      statements: 50,
+    },
+  },
 };
