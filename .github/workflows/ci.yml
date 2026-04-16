@@ -18,8 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm ci
+      # package-lock.json is intentionally gitignored in this project, so
+      # we use `npm install` (not `npm ci`) and skip the setup-node cache.
+      - run: npm install --no-audit --no-fund
       - run: npm run lint
 
   test:
@@ -34,8 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: 'npm'
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - run: npm run test:coverage
       - name: Upload coverage summary
         if: matrix.node == '20'
