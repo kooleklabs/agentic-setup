@@ -3,6 +3,30 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] — 2026-04-16
+
+### Added
+
+- **Test suite** — Jest covers `lib/prompt.js`, `lib/extract.js`, `lib/render.js`, `lib/claude-runner.js`, `lib/generate.js` with 62 unit tests. Coverage thresholds enforced in CI (starting floor: 50% lines, 40% branches, 45% functions, 50% statements). Raise over time; never lower.
+- **ESLint** — `eslint-config-standard` wired up with `npm run lint` and `npm run lint:fix`. Scope: `bin/` and `lib/`. Clean baseline across the codebase.
+- **`docs/decisions/` scaffold** — `init` now creates `docs/decisions/README.md` and `docs/decisions/000-template.md` so the `/adr` slash command has somewhere to write.
+- **CI gates** — new `lint` job and `test` matrix job (Node 18 / 20 / 22). The existing `verify` smoke now also asserts `.claude/hooks/*.sh` are executable and the ADR scaffold exists.
+
+### Fixed
+
+- **Hooks reliably executable after `generate` and `migrate`.** `lib/generate.js` now runs a defensive `ensureHooksExecutable()` after `setup.sh` completes, and `migrate.sh` marks `.claude/hooks/*.sh` executable before exiting. This defends against umask and `npm pack` edge cases that could leave hooks non-executable — no more manual `chmod +x` step.
+
+### Changed
+
+- `coverage/` added to `.gitignore` (generated artifact).
+- CI uses `npm install --no-audit --no-fund` instead of `npm ci` because `package-lock.json` is intentionally gitignored in this project.
+
+### Notes
+
+- Pure additions to the framework's quality gates. No behaviour change in existing commands. Phase 1 Part A of the [autonomous orchestrator roadmap](docs/ROADMAP.md) — Part B (Architecture Design Gate) lands in v2.6.
+
+---
+
 ## [2.4.1] — 2026-04-16
 
 ### Fixed
