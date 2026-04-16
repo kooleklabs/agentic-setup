@@ -601,6 +601,58 @@ Defaults favor plan-first, test-before-commit workflows. The architect agent run
 
 ---
 
+## 🗺 Roadmap
+
+> **Vision:** Turn `@kooleklabs/agentic-app` into a fully autonomous software development orchestrator — where GitHub is the coordination backbone, agents work in parallel, and the framework improves itself over time.
+
+| Phase | Version | What ships | Status |
+|:-----:|---------|------------|:------:|
+| **1** | `v2.5` | Stability (tests, lint, auto-chmod) + **Architecture Design Gate** — architect agent produces full system design (ERD, OpenAPI, UI/UX wireframes, acceptance criteria) before any code is written | 🔨 Up next |
+| **2** | `v3.0` | **GitHub-Native Automation** — Issues → auto plan → agents execute → PR opened → CI gates → board synced | 📋 Planned |
+| **3** | `v3.5` | **Master Orchestrator Engine** — `orchestrate --goal "..."` decomposes goals into GitHub Issues, sequences them, assigns agents | 📋 Planned |
+| **4** | `v4.0` | **Parallel Multi-Agent Factory** — Architect + Coder teams + Security + Tester run simultaneously with a self-review loop | 📋 Planned |
+| **5** | `v4.5` | **aman-agent Core** — long-term memory, knowledge graph, skill crystallization, post-mortem & self-reflection | 📋 Planned |
+| **6** | `v5.0` | **Enterprise Self-Improvement** — SAST/DAST on every PR, audit logs, policy enforcement, self-improving agents | 📋 Planned |
+
+<details>
+<summary><b>What the end state looks like</b></summary>
+
+```
+You:    "Build the supplier management module"
+           ↓
+Orchestrator breaks it into GitHub Issues
+           ↓
+Architect designs the system (ERD, API, wireframes)
+           ↓  (parallel)
+Coder ×N  │  Security Agent  │  Tester Agent
+           ↓
+Self-review loop → PR opened → CI green
+           ↓
+You review & merge — that's all you do
+```
+
+Every decision is logged. Every pattern is remembered. The framework gets better with every run.
+
+</details>
+
+Full design spec: [`docs/ROADMAP.md`](./docs/ROADMAP.md)
+
+---
+
+## 💛 Sponsors
+
+This project is MIT-licensed and free forever. If it saves you time — or if you want to help accelerate the roadmap above — consider sponsoring.
+
+<div align="center">
+
+**[Become a sponsor →](https://github.com/sponsors/kooleklabs)**
+
+</div>
+
+Sponsorship directly funds development time on the phases above. Current priority: **Phase 1 — Architecture Design Gate** (the foundation everything else builds on).
+
+---
+
 ## Contributing
 
 Contributions welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) first.
