@@ -10,8 +10,44 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # package-lock.json is intentionally gitignored in this project, so
+      # we use `npm install` (not `npm ci`) and skip the setup-node cache.
+      - run: npm install --no-audit --no-fund
+      - run: npm run lint
+
+  test:
+    name: test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install --no-audit --no-fund
+      - run: npm run test:coverage
+      - name: Upload coverage summary
+        if: matrix.node == '20'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: coverage/lcov-report/
+          retention-days: 7
+
   verify:
     name: verify (node ${{ matrix.node }})
+    needs: [lint, test]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -65,6 +101,20 @@ jobs:
           for d in .claude/agents .claude/skills .claude/commands .claude/hooks contracts; do
             if [ ! -d "$d" ]; then
               echo "::error::Expected directory $d was not created"
+              exit 1
+            fi
+          done
+          # Verify hooks are executable (Task 10/11 guarantee)
+          for hook in .claude/hooks/pre-commit.sh .claude/hooks/post-edit.sh; do
+            if [ ! -x "$hook" ]; then
+              echo "::error::Hook $hook is not executable after init"
+              exit 1
+            fi
+          done
+          # Verify docs/decisions scaffold (Task 12)
+          for f in docs/decisions/README.md docs/decisions/000-template.md; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Expected $f was not created"
               exit 1
             fi
           done
