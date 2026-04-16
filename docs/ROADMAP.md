@@ -21,10 +21,10 @@ Transform `@kooleklabs/agentic-app` from a one-shot scaffolding CLI into a fully
 
 ---
 
-## Phase 1 — Stability + Full Architecture Design Gate `v2.5`
-**Estimated: 2–3 weeks**
+## Phase 1 — Stability + Full Architecture Design Gate `v2.5 / v2.6`
+**Estimated: 2–3 weeks** — Part A shipped as v2.5.0 (2026-04-16); Part B lands as v2.6.
 
-### Part A — Framework Stability
+### Part A — Framework Stability ✅ Shipped in v2.5.0
 
 - Test suite (Jest) for `lib/` — unit tests for `generate.js`, `migrate.js`, `claude-runner.js`, `render.js`
 - ESLint — enforce code style across `bin/` and `lib/`
