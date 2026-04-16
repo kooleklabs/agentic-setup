@@ -23,6 +23,10 @@ Date is when the document was written. The document itself stays accurate; newer
 - [`2026-04-16-v2.5-plan.md`](./2026-04-16-v2.5-plan.md) — implementation plan for v2.5.0 (14 tasks, ~14 commits)
 - [`2026-04-16-v2.6-plan.md`](./2026-04-16-v2.6-plan.md) — implementation plan for v2.6.0 (8 tasks, real-SDK E2E gated)
 
+### v2.7 — Architecture → GitHub Bridge (in design)
+
+- [`2026-04-16-v2.7-design-spec.md`](./2026-04-16-v2.7-design-spec.md) — approved design for the `push-architecture` command that creates Milestone + feature Issues + umbrella Issue from v2.6's design artefacts. Bridges Phase 1 output to Phase 2 input.
+
 ## Relationship to `docs/superpowers/`
 
 The [superpowers](https://github.com/obra/superpowers) skill suite writes its scratch output under `docs/superpowers/` (gitignored). Documents here are the **promoted / curated** subset — once a design spec or plan has been reviewed and committed to, it graduates into `docs/designs/` and becomes part of the project history.
