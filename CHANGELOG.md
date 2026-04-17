@@ -3,6 +3,38 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] — 2026-04-17
+
+First Phase 2 release.
+
+### Added
+
+- **`github-sync --issue <N>` command.** Reads a feature Issue created by v2.7's `push-architecture`, extracts context (acceptance criteria, API paths, linked ADR bodies, matching `architecture.md` section), calls Claude via the Agent SDK to generate an implementation plan, writes it to `docs/plans/<slug>.md`, and opens a **draft PR** for human review. Posts a "Plan PR: #N" comment on the source Issue.
+- Plan document template: `## Problem statement`, `## Acceptance criteria`, `## Approach`, `## Files to change`, `## Implementation steps`, `## Test plan`, `## Open questions`, `## Rollback`. Required sections are validated; one retry on truncation.
+- **Flags:** `--issue <N>` (required), `--dry-run`, `--force`, `--no-comment`, `--model <name>` (default: `claude-sonnet-4-6`), `--base <branch>` (default: `main`), `--ready` (opens as non-draft PR), `--help`.
+- New modules: `lib/github-issue-reader.js`, `lib/plan-prompt.js`, `lib/plan-template.js`, `lib/plan-generator.js`, `lib/github-sync.js`, `lib/github-sync-cli.js`, `lib/gh-plan-pr.js`.
+- `lib/github-issues.js` gains `commentOnIssue` wrapper.
+- CI `verify` smoke asserts all 7 flags are documented in `github-sync --help`.
+- README section under `## 📦 Commands`.
+
+### Tested
+
+- 241 unit tests across 17 suites (+59 for v3.0 modules — reader, prompt builder, template renderer, SDK wrapper, PR opener, orchestrator, CLI).
+- Real-SDK E2E against a throwaway repo: seeded with `push-architecture`, `github-sync --issue 2` produced a full plan PR (all 8 sections present) attached to Issue #2 with a linking comment. Cost ~$0.60 per plan with `claude-sonnet-4-6`.
+
+### Notes
+
+- **Requires Claude credentials** (env var or Claude Code session). The planner uses the same SDK path as v2.6's architecture gate.
+- `push-architecture` Issues are the primary source. Support for ad-hoc Issues without markers is deferred to v3.3+.
+- **Known quirk:** despite `allowedTools: []`, the SDK may still invoke read-only tools (Bash, Read) against the target repo's working tree during plan generation. Output correctness is unaffected. Hardening tracked for v3.0.x.
+- **What's next:** v3.1 adds `--execute` for agent-driven implementation of a merged plan. v3.2 adds project-board automation.
+
+### Breaking changes
+
+- None. v2.7.x → v3.0.0 is additive — `push-architecture`, `generate`, `init`, etc. all behave as before. The major bump marks Phase 2's arrival, not an API break.
+
+---
+
 ## [2.7.2] — 2026-04-17
 
 ### Fixed
