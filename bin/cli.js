@@ -54,6 +54,13 @@ Commands:
     --from-analysis <file>    Resume from an existing scan (skip Phase 1)
     --target <target>         Output target: claude, copilot, or both (default: both)
 
+  push-architecture [options] Create GitHub Issues + milestone from docs/architecture.md
+    --dry-run                 Show the plan without creating anything
+    --force                   Ignore existing markers and create everything fresh
+    --no-umbrella             Skip the top-level umbrella Issue
+    --milestone <name>        Override milestone title (default: "<Project> v1.0")
+    Requires the \`gh\` CLI authenticated via \`gh auth login\`.
+
 Examples:
   npx @kooleklabs/agentic-app init
   npx @kooleklabs/agentic-app generate --from proposal.docx
@@ -129,6 +136,12 @@ async function main() {
 
   if (cmd === 'generate') {
     return runGenerate(args);
+  }
+
+  if (cmd === 'push-architecture') {
+    const cli = require(path.join(PKG_ROOT, 'lib', 'github-push-cli.js'));
+    const code = await cli.main(args);
+    process.exit(code ?? 0);
   }
 
   const scriptName = BASH_SCRIPTS[cmd];

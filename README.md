@@ -242,6 +242,41 @@ The git commit is the approval. Edit the files freely before committing.
 
 ---
 
+### Push architecture to GitHub (v2.7+)
+
+Once `docs/architecture.md` is committed, turn the design into GitHub work items in one shot:
+
+```bash
+npx @kooleklabs/agentic-app push-architecture
+```
+
+The command parses `docs/architecture.md` and uses the `gh` CLI to create:
+
+- **1 Milestone** — e.g. `"<Project> v1.0"` (override with `--milestone <name>`)
+- **1 feature Issue per `### Feature:`** entry under `## Acceptance Criteria`, with acceptance criteria, related API paths from `contracts/api-spec.yaml`, and links to related ADRs
+- **1 umbrella Issue** — an index of every feature Issue, linked to the Milestone (skip with `--no-umbrella`)
+
+**Examples:**
+
+```bash
+# See what would be created, no API calls
+npx @kooleklabs/agentic-app push-architecture --dry-run
+
+# Custom milestone title
+npx @kooleklabs/agentic-app push-architecture --milestone "v0.1 MVP"
+
+# Re-run safe — already-created features are skipped
+npx @kooleklabs/agentic-app push-architecture
+```
+
+**Idempotency:** every Issue body contains an HTML-comment marker (`<!-- agentic-app:feature:slug -->`). Re-runs detect these markers and skip features that already exist, so it's safe to re-run after editing `architecture.md` — only newly added features will be created. Pass `--force` to bypass marker detection.
+
+**Next step (v3.0):** `github-sync --issue <number>` will take a feature Issue and run the full plan-implement-PR loop.
+
+**Requires:** the [`gh` CLI](https://cli.github.com) authenticated via `gh auth login`.
+
+---
+
 ## 💬 Interactive mode
 
 Default generation is autonomous — Claude makes reasonable choices based on your requirement and the prompt tells it to note any assumptions in `CLAUDE.md`. Pass `--interactive` to pause whenever Claude asks a clarifying question:

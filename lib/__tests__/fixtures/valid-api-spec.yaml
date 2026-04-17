@@ -1,0 +1,13 @@
+openapi: 3.0.3
+info:
+  title: Inventory API
+  version: 1.0.0
+paths:
+  /api/v1/products/low-stock:
+    get:
+      responses:
+        '200': { description: ok }
+  /api/v1/products/bulk:
+    post:
+      responses:
+        '201': { description: created }
