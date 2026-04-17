@@ -3,6 +3,25 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.2] — 2026-04-17
+
+### Fixed
+
+Two shipped bugs in `push-architecture` (originally in v2.7.2, audited post-v3.0.1):
+
+- **`push-architecture --force` aborted on milestone collision.** `listMilestones` was skipped when `force=true`, so `createMilestone` ran unconditionally and GitHub returned 422 on duplicate title.
+- **`push-architecture --force` duplicated the umbrella Issue.** The same `force ?` gate skipped umbrella marker detection, producing a second umbrella.
+
+Root cause: `--force` conflated feature-duplicate-skip (correctly loosened) with singleton uniqueness (incorrectly loosened). Milestone and umbrella are singletons and should always be idempotent by name.
+
+**Fix:** `listMilestones` and `listOpenIssuesWithMarkers` now run unconditionally; `--force` only affects the per-feature marker check. Singletons are always reused when they exist.
+
+### Tested
+
+- 248 tests (+2) — `--force` with existing milestone does NOT create a duplicate; `--force` with existing umbrella reuses it and refreshes its body in place.
+
+---
+
 ## [3.0.1] — 2026-04-17
 
 ### Fixed
