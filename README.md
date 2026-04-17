@@ -17,9 +17,41 @@
 [Interactive mode](#-interactive-mode) •
 [Cost tracking](#-cost-tracking) •
 [Daily workflow](#-daily-workflow) •
+[Roadmap](#-roadmap) •
 [FAQ](#-faq)
 
 </div>
+
+---
+
+## What's New
+
+<details>
+<summary><b>v3.1 — Plan → Implementation Pass</b> <code>🚧 In Progress</code></summary>
+
+`github-sync --execute` closes the final gap in the GitHub-native loop: it reads a reviewed-and-merged plan and runs a full implementation pass on a fresh `impl/<slug>` branch, ready for human review and PR.
+
+**Also shipping in v3.1:**
+- `--yes` / `-y` on both `push-architecture` and `github-sync` — skip the confirmation prompt for CI and scripted flows
+- Smart `--base` auto-detection via `gh repo view` — no more hardcoded `main`
+
+</details>
+
+<details>
+<summary><b>v3.0 — GitHub-Native Automation</b> <code>✅ Shipped 2026-04-17</code></summary>
+
+- `push-architecture` — parses `docs/architecture.md` and creates GitHub Milestones + one Issue per feature in one shot
+- `github-sync --issue N` — turns any feature Issue into a reviewed implementation plan (draft PR + Issue comment)
+- Idempotent re-runs, `--dry-run`, `--force`, `--ready`, `--no-comment`, `--yes` flags
+
+</details>
+
+<details>
+<summary><b>v2.6 — Architecture Design Gate</b> <code>✅ Shipped 2026-04-16</code></summary>
+
+After `generate`, an architect agent automatically produces a full system design before any feature code is written: ERD, real OpenAPI contract, ADRs, and domain skills.
+
+</details>
 
 ---
 
@@ -120,6 +152,9 @@ Every tool call is a single line. Elapsed timer on the left. Cost line at the en
 | **`init`** | Blank slate, you know your stack | Universal framework — 6 agents, 5 skills, 10 slash commands, pre-commit hooks. You fill in `CLAUDE.md`. |
 | **`generate`** | Have a PRD, proposal, or one-liner idea | Everything `init` gives you, plus stack-specific agents, domain skills per module, and an OpenAPI skeleton if APIs are mentioned. |
 | **`migrate`** | Existing codebase | Framework tuned to what your code **actually does today** + `MIGRATION_PLAN.md` gap report (CRITICAL → LOW) with a phased roadmap. |
+| **`push-architecture`** | After committing `docs/architecture.md` | Creates a GitHub Milestone + one feature Issue per acceptance-criteria entry, with linked ADRs and API paths. |
+| **`github-sync --issue N`** | Feature Issue exists on GitHub | Generates an implementation plan document and opens a draft PR — ready for team review. |
+| **`github-sync --issue N --execute`** | Plan PR is merged *(v3.1)* | Reads the merged plan, runs a full implementation pass on `impl/<slug>`, leaves a WIP commit for human review. |
 
 <details>
 <summary><b><code>generate</code> — all flags</b></summary>
@@ -265,13 +300,14 @@ npx @kooleklabs/agentic-app push-architecture --dry-run
 # Custom milestone title
 npx @kooleklabs/agentic-app push-architecture --milestone "v0.1 MVP"
 
+# Non-interactive — skip the confirmation prompt (useful in CI)
+npx @kooleklabs/agentic-app push-architecture --yes
+
 # Re-run safe — already-created features are skipped
 npx @kooleklabs/agentic-app push-architecture
 ```
 
 **Idempotency:** every Issue body contains an HTML-comment marker (`<!-- agentic-app:feature:slug -->`). Re-runs detect these markers and skip features that already exist, so it's safe to re-run after editing `architecture.md` — only newly added features will be created. Pass `--force` to bypass marker detection.
-
-**Next step (v3.0):** `github-sync --issue <number>` generates an implementation plan PR from a feature Issue.
 
 **Requires:** the [`gh` CLI](https://cli.github.com) authenticated via `gh auth login`.
 
@@ -296,8 +332,11 @@ npx @kooleklabs/agentic-app github-sync --issue 42 --dry-run
 # Regenerate after editing the Issue
 npx @kooleklabs/agentic-app github-sync --issue 42 --force
 
-# Custom base branch, ready-for-review PR (not draft)
+# Custom base branch (auto-detected by default), ready-for-review PR (not draft)
 npx @kooleklabs/agentic-app github-sync --issue 42 --base develop --ready
+
+# Non-interactive — skip the confirmation prompt
+npx @kooleklabs/agentic-app github-sync --issue 42 --yes
 ```
 
 **What gets created:**
@@ -308,7 +347,7 @@ npx @kooleklabs/agentic-app github-sync --issue 42 --base develop --ready
 
 **Idempotency:** the filename is the marker. Re-running without `--force` fails fast. `--force` regenerates; delete the existing file or branch to start fresh.
 
-**Next step (v3.1+):** `--execute` flag — see below.
+**Next step:** once the plan PR is merged, run `github-sync --issue N --execute` (v3.1) to start implementation.
 
 **Requires:** the [`gh` CLI](https://cli.github.com) authenticated, and Claude credentials (same setup as `generate`).
 
@@ -805,8 +844,9 @@ Defaults favor plan-first, test-before-commit workflows. The architect agent run
 
 | Phase | Version | What ships | Status |
 |:-----:|---------|------------|:------:|
-| **1** | `v2.5` + `v2.6` | Stability (tests, lint, auto-chmod) + **Architecture Design Gate** — architect agent produces full system design (ERD, OpenAPI, UI/UX wireframes, acceptance criteria) before any code is written | ✅ Shipped 2026-04-16 |
-| **2** | `v3.0` | **GitHub-Native Automation** — Issues → auto plan → agents execute → PR opened → CI gates → board synced | 📋 Planned |
+| **1** | `v2.5` + `v2.6` | **Stability + Architecture Design Gate** — Jest suite, ESLint, CI, auto-chmod hooks; architect agent produces full system design (ERD, OpenAPI, ADRs) before any code is written | ✅ Shipped 2026-04-16 |
+| **2** | `v3.0` | **GitHub-Native Automation** — `push-architecture` creates Milestones + Issues; `github-sync --issue N` generates a plan PR from any feature Issue | ✅ Shipped 2026-04-17 |
+| **2.1** | `v3.1` | **Plan → Implementation Pass** — `github-sync --issue N --execute` reads a merged plan and produces a WIP implementation branch; `--yes` for CI; smart `--base` auto-detection | 🚧 In Progress |
 | **3** | `v3.5` | **Master Orchestrator Engine** — `orchestrate --goal "..."` decomposes goals into GitHub Issues, sequences them, assigns agents | 📋 Planned |
 | **4** | `v4.0` | **Parallel Multi-Agent Factory** — Architect + Coder teams + Security + Tester run simultaneously with a self-review loop | 📋 Planned |
 | **5** | `v4.5` | **aman-agent Core** — long-term memory, knowledge graph, skill crystallization, post-mortem & self-reflection | 📋 Planned |
@@ -847,7 +887,7 @@ This project is MIT-licensed and free forever. If it saves you time — or if yo
 
 </div>
 
-Sponsorship directly funds development time on the phases above. Current priority: **Phase 1 — Architecture Design Gate** (the foundation everything else builds on).
+Sponsorship directly funds development time on the phases above. Current priority: **Phase 2.1 — Plan → Implementation Pass** (`v3.1`).
 
 ---
 
