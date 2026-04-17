@@ -3,6 +3,32 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] — 2026-04-17
+
+### Added
+
+- **`push-architecture` command.** Turns v2.6's design artefacts (`docs/architecture.md`, `contracts/api-spec.yaml`, `docs/decisions/`) into GitHub work items in one shot — no LLM, pure parser + `gh` CLI subprocess.
+  - **1 Milestone** (default `"<Project> v1.0"`, override with `--milestone <name>`).
+  - **1 feature Issue per `### Feature:`** entry under `## Acceptance Criteria`, with acceptance criteria, related API paths from OpenAPI, and links to related ADRs.
+  - **1 umbrella Issue** indexing every feature Issue and linked to the Milestone (skip with `--no-umbrella`).
+- **Idempotency via HTML-comment markers.** Every Issue body contains a marker (`<!-- agentic-app:TYPE:SLUG -->`) so re-runs detect existing items and skip them — safe to re-run after editing `architecture.md`; only newly added features are created. Bypass with `--force`.
+- **Flags.** `--dry-run` (plan only, no writes), `--force`, `--no-umbrella`, `--milestone <name>`, `--help`. Approval prompt before any writes (unless dry-run).
+- New modules: `lib/marker.js`, `lib/architecture-parser.js`, `lib/issue-body.js`, `lib/github-repo.js`, `lib/github-issues.js`, `lib/github-push.js`, `lib/github-push-cli.js`.
+- `bin/cli.js` routes `push-architecture` to the new CLI wrapper.
+
+### Tested
+
+- 172 unit tests across 15 suites, including 80 new tests for the v2.7 modules (markers, parser, body builders, remote detection, `gh` CLI wrappers, orchestrator with dry-run/idempotency/error paths, CLI arg parsing).
+- CI `verify` smoke now asserts `--dry-run`, `--force`, `--no-umbrella`, and `--milestone` are documented in `push-architecture --help`.
+
+### Notes
+
+- **Requires the [`gh` CLI](https://cli.github.com)** authenticated via `gh auth login`. No new runtime dependencies — uses `spawnSync` with array args (no shell, no interpolation).
+- `github-push-cli.js` lazy-requires the orchestrator so `push-architecture --help` stays zero-dep (works without `npm install`).
+- **Bridge release** between Phase 1 (design artefacts) and Phase 2 (GitHub-native automation). v3.0's `github-sync --issue <n>` will consume the feature Issues this command creates and run the full plan-implement-PR loop.
+
+---
+
 ## [2.6.0] — 2026-04-16
 
 ### Added
