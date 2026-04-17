@@ -3,6 +3,19 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] — 2026-04-17
+
+### Fixed
+
+- **`github-sync` planner options** — `permissionMode: 'bypassPermissions'` + the Claude Code `tools` preset was auto-approving every tool call. `allowedTools: []` did not restrict the agent per SDK semantics ("defaults to all tools"). Removed the bypass + presets; added `canUseTool` that denies every request as a backstop. The planner's intent is now explicit in the config. Residual SDK tool-exposure tracked for v3.1.
+- **`github-sync --issue N --force` git push non-fast-forward** — when a prior run had already pushed `plan/<slug>` to origin, `--force` regeneration failed at the push step. New `cleanupPlanBranch` helper best-effort deletes local + remote plan branch before opening the fresh PR.
+
+### Tested
+
+- 246 tests across 22 suites (+4 for cleanupPlanBranch happy-path + best-effort + orchestrator cleanup ordering).
+
+---
+
 ## [3.0.0] — 2026-04-17
 
 First Phase 2 release.
