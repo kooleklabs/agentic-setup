@@ -61,6 +61,15 @@ Commands:
     --milestone <name>        Override milestone title (default: "<Project> v1.0")
     Requires the \`gh\` CLI authenticated via \`gh auth login\`.
 
+  github-sync --issue <N>     Generate an implementation plan PR from a feature Issue
+    --dry-run                 Print extracted context + prompt, skip the SDK call
+    --force                   Re-generate even if docs/plans/<slug>.md exists
+    --no-comment              Skip the "Plan PR: #<M>" comment on the Issue
+    --model <name>            Override model (default: claude-sonnet-4-6)
+    --base <branch>           Base branch for the plan PR (default: main)
+    --ready                   Open as ready-for-review (default: draft)
+    Requires the \`gh\` CLI + Claude credentials.
+
 Examples:
   npx @kooleklabs/agentic-app init
   npx @kooleklabs/agentic-app generate --from proposal.docx
@@ -140,6 +149,12 @@ async function main() {
 
   if (cmd === 'push-architecture') {
     const cli = require(path.join(PKG_ROOT, 'lib', 'github-push-cli.js'));
+    const code = await cli.main(args);
+    process.exit(code ?? 0);
+  }
+
+  if (cmd === 'github-sync') {
+    const cli = require(path.join(PKG_ROOT, 'lib', 'github-sync-cli.js'));
     const code = await cli.main(args);
     process.exit(code ?? 0);
   }
