@@ -308,9 +308,61 @@ npx @kooleklabs/agentic-app github-sync --issue 42 --base develop --ready
 
 **Idempotency:** the filename is the marker. Re-running without `--force` fails fast. `--force` regenerates; delete the existing file or branch to start fresh.
 
-**Next step (v3.1):** `github-sync --issue N --execute` reads a merged plan and runs the full implementation loop (agent writes code → `/self-review` → implementation PR).
+**Next step (v3.1+):** `--execute` flag — see below.
 
 **Requires:** the [`gh` CLI](https://cli.github.com) authenticated, and Claude credentials (same setup as `generate`).
+
+---
+
+### Execute a merged plan (v3.1+)
+
+Once the plan PR (above) has been reviewed and merged, turn it into a first implementation pass:
+
+```bash
+npx @kooleklabs/agentic-app github-sync --issue 42 --execute
+```
+
+Pre-flight checks:
+- `docs/plans/<slug>.md` exists and passes the section validator
+- Plan PR is merged (`plan/<slug>` branch is gone from origin)
+- No existing `impl/<slug>` branch locally or remotely
+- Working tree is clean
+
+If all pass, a fresh `impl/<slug>` branch is created from the detected default branch, the agent implements the plan with Write / Edit / Read / Bash tools, and the resulting changes are committed as a single `wip(impl): ...` commit. **No PR is opened** — inspect the diff, amend as needed, then open the PR yourself:
+
+```bash
+git diff impl/<slug>                   # review what the agent produced
+git push -u origin impl/<slug>
+gh pr create --title "implement: <feature>" --body "Closes #<N>" --draft
+```
+
+**Cost control:** `--max-cost-usd` (default `5.00`) aborts the SDK stream mid-run if accumulated token cost exceeds the cap. Dry-run first to preview:
+
+```bash
+npx @kooleklabs/agentic-app github-sync --issue 42 --execute --dry-run
+```
+
+**Examples:**
+
+```bash
+# Raise the cap for a complex feature; non-interactive approval
+npx @kooleklabs/agentic-app github-sync --issue 42 --execute --yes --max-cost-usd 10
+
+# Use a different impl branch name
+npx @kooleklabs/agentic-app github-sync --issue 42 --execute --impl-branch feat-browse-v2
+```
+
+**Next step (v3.1.1):** auto `/self-review` + draft PR after a successful implementation pass.
+
+**Requires:** the same environment as the plan mode above — `gh` CLI + Claude credentials.
+
+### `--yes` for non-interactive runs
+
+Both `push-architecture` and `github-sync` accept `--yes` / `-y` to skip the `Proceed? [y/N]` prompt. Unblocks CI, cron, and scripted flows.
+
+### Auto-detected base branch
+
+`github-sync` reads your repo's default branch via `gh repo view` instead of hardcoding `main`. Explicit `--base <name>` still wins. Fixes repos that use `master`, `develop`, or custom defaults.
 
 ---
 
