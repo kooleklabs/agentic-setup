@@ -35,7 +35,8 @@ Date is when the document was written. The document itself stays accurate; newer
 
 ### v3.1 — Plan → Implementation Pass (in design)
 
-- [`2026-04-17-v3.1-design-spec.md`](./2026-04-17-v3.1-design-spec.md) — draft design for `github-sync --issue N --execute`. Reads a merged plan, runs ONE implementation pass on `impl/<slug>` branch with Write/Edit/Read/Bash tools, commits as a single WIP commit for human review. `/self-review` and auto-PR deferred to v3.1.1. Also bundles `--yes` flag and smart `--base` detection.
+- [`2026-04-17-v3.1-design-spec.md`](./2026-04-17-v3.1-design-spec.md) — approved design for `github-sync --issue N --execute`. Reads a merged plan, runs ONE implementation pass on `impl/<slug>` branch with Write/Edit/Read/Bash tools, commits as a single WIP commit for human review. `/self-review` and auto-PR deferred to v3.1.1. Also bundles `--yes` flag and smart `--base` detection.
+- [`2026-04-17-v3.1-plan.md`](./2026-04-17-v3.1-plan.md) — implementation plan (10 tasks across 4 chunks, TDD-driven, ~33 new tests).
 
 ## Relationship to `docs/superpowers/`
 
