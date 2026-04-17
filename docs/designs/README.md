@@ -28,10 +28,14 @@ Date is when the document was written. The document itself stays accurate; newer
 - [`2026-04-16-v2.7-design-spec.md`](./2026-04-16-v2.7-design-spec.md) — approved design for the `push-architecture` command that creates Milestone + feature Issues + umbrella Issue from v2.6's design artefacts. Bridges Phase 1 output to Phase 2 input.
 - [`2026-04-16-v2.7-plan.md`](./2026-04-16-v2.7-plan.md) — implementation plan (9 tasks across 4 chunks, TDD-driven, ~105+ tests total)
 
-### v3.0 — GitHub Issue → Implementation Plan (in design)
+### v3.0 — GitHub Issue → Implementation Plan (shipped 2026-04-17)
 
 - [`2026-04-17-v3.0-design-spec.md`](./2026-04-17-v3.0-design-spec.md) — approved design for the `github-sync --issue <N>` command. Reads a feature Issue created by v2.7, calls the Agent SDK to generate a plan document, opens a draft PR for human review. First release in Phase 2. Agent-driven execution deferred to v3.1.
 - [`2026-04-17-v3.0-plan.md`](./2026-04-17-v3.0-plan.md) — implementation plan (9 tasks across 4 chunks, TDD-driven, ~44 new tests).
+
+### v3.1 — Plan → Implementation Pass (in design)
+
+- [`2026-04-17-v3.1-design-spec.md`](./2026-04-17-v3.1-design-spec.md) — draft design for `github-sync --issue N --execute`. Reads a merged plan, runs ONE implementation pass on `impl/<slug>` branch with Write/Edit/Read/Bash tools, commits as a single WIP commit for human review. `/self-review` and auto-PR deferred to v3.1.1. Also bundles `--yes` flag and smart `--base` detection.
 
 ## Relationship to `docs/superpowers/`
 
