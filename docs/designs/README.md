@@ -30,7 +30,8 @@ Date is when the document was written. The document itself stays accurate; newer
 
 ### v3.0 — GitHub Issue → Implementation Plan (in design)
 
-- [`2026-04-17-v3.0-design-spec.md`](./2026-04-17-v3.0-design-spec.md) — draft design for the `github-sync --issue <N>` command. Reads a feature Issue created by v2.7, calls the Agent SDK to generate a plan document, opens a draft PR for human review. First release in Phase 2. Agent-driven execution deferred to v3.1.
+- [`2026-04-17-v3.0-design-spec.md`](./2026-04-17-v3.0-design-spec.md) — approved design for the `github-sync --issue <N>` command. Reads a feature Issue created by v2.7, calls the Agent SDK to generate a plan document, opens a draft PR for human review. First release in Phase 2. Agent-driven execution deferred to v3.1.
+- [`2026-04-17-v3.0-plan.md`](./2026-04-17-v3.0-plan.md) — implementation plan (9 tasks across 4 chunks, TDD-driven, ~44 new tests).
 
 ## Relationship to `docs/superpowers/`
 
