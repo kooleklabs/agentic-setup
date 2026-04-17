@@ -3,6 +3,21 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] — 2026-04-17
+
+### Fixed
+
+- **`push-architecture` is now fully idempotent on re-run.** Two gaps from v2.7.0/1 closed:
+  - **Milestone reuse.** v2.7.1 correctly passed the milestone name, but still called `createMilestone` unconditionally — a pure re-run against the same repo would 422 on duplicate title. New `listMilestones` looks up an existing milestone by title and reuses it before falling back to create.
+  - **Umbrella refresh.** The umbrella Issue was only rendered at initial creation; re-runs that added new features left the listing stale. The marker scan now captures existing feature numbers + the existing umbrella, merges them with newly created feature numbers, and always refreshes the umbrella body (unless `--no-umbrella`).
+
+### Tested
+
+- 182 unit tests across 15 suites (9 new: 4 for `listMilestones`, 5 for milestone reuse / umbrella refresh / no-op re-run / `--no-umbrella` paths).
+- Real-E2E against a throwaway repo across 3 passes (fresh → no-op re-run → add feature + re-run). Umbrella body confirmed current via `gh api`.
+
+---
+
 ## [2.7.1] — 2026-04-17
 
 ### Fixed
