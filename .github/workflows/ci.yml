@@ -137,6 +137,15 @@ jobs:
           done
           echo "push-architecture --help smoke passed"
 
+      - name: Smoke test — github-sync --help documents all flags
+        run: |
+          HELP=$(node "$GITHUB_WORKSPACE/bin/cli.js" github-sync --help)
+          for flag in "--issue" "--dry-run" "--force" "--no-comment" "--model" "--base" "--ready"; do
+            echo "$HELP" | grep -q -- "$flag" \
+              || { echo "::error::$flag not documented in github-sync --help"; exit 1; }
+          done
+          echo "github-sync --help smoke passed"
+
   shellcheck:
     name: shellcheck
     runs-on: ubuntu-latest

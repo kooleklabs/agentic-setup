@@ -271,9 +271,46 @@ npx @kooleklabs/agentic-app push-architecture
 
 **Idempotency:** every Issue body contains an HTML-comment marker (`<!-- agentic-app:feature:slug -->`). Re-runs detect these markers and skip features that already exist, so it's safe to re-run after editing `architecture.md` — only newly added features will be created. Pass `--force` to bypass marker detection.
 
-**Next step (v3.0):** `github-sync --issue <number>` will take a feature Issue and run the full plan-implement-PR loop.
+**Next step (v3.0):** `github-sync --issue <number>` generates an implementation plan PR from a feature Issue.
 
 **Requires:** the [`gh` CLI](https://cli.github.com) authenticated via `gh auth login`.
+
+---
+
+### Plan a feature from a GitHub Issue (v3.0+)
+
+Once a feature Issue exists (from `push-architecture` or hand-authored with a `agentic-app:feature:<slug>` marker), turn it into a reviewed implementation plan:
+
+```bash
+npx @kooleklabs/agentic-app github-sync --issue 42
+```
+
+Fetches the Issue, extracts acceptance criteria / related API paths / linked ADRs, generates a plan via Claude, and opens a **draft PR** containing `docs/plans/<slug>.md`. Posts a comment on the Issue linking back to the PR.
+
+**Examples:**
+
+```bash
+# Preview the context + LLM prompt without calling the API
+npx @kooleklabs/agentic-app github-sync --issue 42 --dry-run
+
+# Regenerate after editing the Issue
+npx @kooleklabs/agentic-app github-sync --issue 42 --force
+
+# Custom base branch, ready-for-review PR (not draft)
+npx @kooleklabs/agentic-app github-sync --issue 42 --base develop --ready
+```
+
+**What gets created:**
+
+- `docs/plans/<slug>.md` with `## Problem statement`, `## Acceptance criteria`, `## Approach`, `## Files to change`, `## Implementation steps`, `## Test plan`, `## Open questions`, `## Rollback`
+- Draft PR titled `plan: <feature name>` on branch `plan/<slug>` targeting your base branch
+- Comment on the source Issue linking to the plan PR
+
+**Idempotency:** the filename is the marker. Re-running without `--force` fails fast. `--force` regenerates; delete the existing file or branch to start fresh.
+
+**Next step (v3.1):** `github-sync --issue N --execute` reads a merged plan and runs the full implementation loop (agent writes code → `/self-review` → implementation PR).
+
+**Requires:** the [`gh` CLI](https://cli.github.com) authenticated, and Claude credentials (same setup as `generate`).
 
 ---
 
