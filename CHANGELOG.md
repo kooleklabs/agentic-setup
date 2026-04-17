@@ -3,6 +3,20 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.1] — 2026-04-17
+
+### Fixed
+
+- **`push-architecture` — every `createIssue` call failed with `could not add to milestone '1': '1' not found`.** `gh issue create --milestone` expects the milestone *name*, not the number; `lib/github-push.js` was passing `milestone.number`. Unit tests mocked the `gh` CLI so this never surfaced. Caught by a real-E2E run against a throwaway repo shortly after v2.7.0 shipped.
+- New regression test asserts every `createIssue` call receives the milestone title string, not a number.
+
+### Known gaps (tracked for v2.7.2)
+
+- `createMilestone` is not idempotent — a pure re-run fails on duplicate milestone title.
+- Umbrella body is only rendered at initial creation; re-runs that add new features don't refresh it.
+
+---
+
 ## [2.7.0] — 2026-04-17
 
 ### Added
