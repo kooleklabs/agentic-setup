@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.3] — 2026-04-18
+
+### Added
+
+- **Auto self-review** when `github-sync --execute --open-pr` runs. Before the PR opens, `npm test` and `npm run lint` are invoked from the project's `package.json` scripts (skipped if not defined). Results land in a "Verification (self-review)" Markdown table in the PR body with pass/fail status, command, and duration per check.
+- **Failures do not block PR creation** — they surface as a ⚠️ warning annotation so the reviewer sees the signal but retains the merge decision.
+- New module `lib/self-review.js`.
+
+### Notes
+
+- Node/npm only in v3.1.3. Python (pytest), Rust (cargo), and other stacks deferred.
+- Piggybacks on `--open-pr`; no new flag needed. Self-review is NOT run without `--open-pr` (local-branch workflow is unchanged).
+- Security review remains deferred — scope kept narrow for incremental delivery.
+
+### Tested
+
+- 317 tests (+11) — self-review behavior (pass/fail/missing-script/no-package), PR body Verification table, orchestrator ordering (runSelfReview before openImplPR), failure non-blocking.
+
+---
+
 ## [3.1.2] — 2026-04-18
 
 ### Added
