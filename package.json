@@ -1,6 +1,6 @@
 {
   "name": "@kooleklabs/agentic-app",
-  "version": "3.1.3",
+  "version": "3.2.0",
   "description": "Drop into any project — one command installs an agent-ready framework for Claude Code and GitHub Copilot CLI with plan-first workflows, skills, hooks, and guardrails.",
   "keywords": [
     "claude",
