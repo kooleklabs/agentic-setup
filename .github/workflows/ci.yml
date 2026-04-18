@@ -140,7 +140,7 @@ jobs:
       - name: Smoke test — github-sync --help documents all flags
         run: |
           HELP=$(node "$GITHUB_WORKSPACE/bin/cli.js" github-sync --help)
-          for flag in "--issue" "--dry-run" "--force" "--no-comment" "--model" "--base" "--ready" "--yes" "--execute" "--impl-branch" "--max-cost-usd"; do
+          for flag in "--issue" "--dry-run" "--force" "--no-comment" "--model" "--base" "--ready" "--yes" "--execute" "--impl-branch" "--max-cost-usd" "--open-pr"; do
             echo "$HELP" | grep -q -- "$flag" \
               || { echo "::error::$flag not documented in github-sync --help"; exit 1; }
           done

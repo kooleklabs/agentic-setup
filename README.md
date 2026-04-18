@@ -389,9 +389,14 @@ npx @kooleklabs/agentic-app github-sync --issue 42 --execute --yes --max-cost-us
 
 # Use a different impl branch name
 npx @kooleklabs/agentic-app github-sync --issue 42 --execute --impl-branch feat-browse-v2
+
+# Push branch and open a draft PR automatically (v3.1.2+)
+npx @kooleklabs/agentic-app github-sync --issue 42 --execute --yes --open-pr
 ```
 
-**Next step (v3.1.1):** auto `/self-review` + draft PR after a successful implementation pass.
+**Auto-PR with `--open-pr` (v3.1.2+):** after the WIP commit, push `impl/<slug>` to origin and open a draft PR titled `implement: <feature>`. The PR body says `Closes #<N>` (auto-closes the Issue on merge), lists files written + commands run, and flags when no files were written or no verification commands were invoked. The Issue gets a comment linking to the new PR.
+
+**Next step (v3.1.3):** auto `/self-review` (tests + lint + security) before the PR opens.
 
 **Requires:** the same environment as the plan mode above — `gh` CLI + Claude credentials.
 
