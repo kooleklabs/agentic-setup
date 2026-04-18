@@ -396,7 +396,9 @@ npx @kooleklabs/agentic-app github-sync --issue 42 --execute --yes --open-pr
 
 **Auto-PR with `--open-pr` (v3.1.2+):** after the WIP commit, push `impl/<slug>` to origin and open a draft PR titled `implement: <feature>`. The PR body says `Closes #<N>` (auto-closes the Issue on merge), lists files written + commands run, and flags when no files were written or no verification commands were invoked. The Issue gets a comment linking to the new PR.
 
-**Next step (v3.1.3):** auto `/self-review` (tests + lint + security) before the PR opens.
+**Auto self-review with `--open-pr` (v3.1.3+):** before the PR opens, `npm test` and `npm run lint` run automatically (when `package.json` defines the scripts). Results land in a "Verification" table in the PR body with pass/fail per check and duration. Failures do NOT block PR creation — they surface as a warning so reviewers see the signal. Python and other stacks ship in a later release.
+
+**Next step (v3.2):** project-board automation — Issues move across columns as PRs open/merge.
 
 **Requires:** the same environment as the plan mode above — `gh` CLI + Claude credentials.
 
