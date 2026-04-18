@@ -3,6 +3,22 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.1] — 2026-04-18
+
+### Fixed
+
+Three known issues from v3.1.0:
+
+- **Agent WIP commits no longer include `node_modules/` or other transient artifacts.** `commitImplChanges` now uses pathspec excludes (`node_modules`, `dist`, `build`, `.next`, `target`, `coverage`, `.cache`, `.env`, `.env.local`) so `git add` never sweeps them up. The impl-generator prompt also requires the agent to maintain a `.gitignore` covering these paths BEFORE running install/build.
+- **`--max-cost-usd` is now actually enforced.** v3.1.0 estimated cost from per-message `message.usage` but the SDK doesn't populate it consistently, so the cap was effectively ignored. The orchestrator now passes `maxBudgetUsd` to the SDK (server-side enforcement) and reads the authoritative `total_cost_usd` from the terminal `result` message.
+- **`--dry-run --execute` no longer strands a local branch.** Pre-flight (read-only checks) is split from `createImplBranch` (actual checkout). Pre-flight runs before the dry-run short-circuit; branch creation is deferred until AFTER approval, so declined prompts also don't leave stranded branches.
+
+### Tested
+
+- 293 tests (+4): preflight-without-side-effect, pathspec-excludes-in-add-args, `maxBudgetUsd` passthrough to SDK options, `costUsd` parsed from result message.
+
+---
+
 ## [3.1.0] — 2026-04-18
 
 Second Phase 2 release — the plan-consumer half of the loop.
