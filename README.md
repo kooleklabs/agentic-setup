@@ -12,7 +12,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
 [Quick start](#-quick-start) •
-[What you'll see](#-what-youll-see) •
+[GitHub-native loop](#-the-github-native-loop) •
 [Commands](#-commands) •
 [Interactive mode](#-interactive-mode) •
 [Cost tracking](#-cost-tracking) •
@@ -24,32 +24,56 @@
 
 ---
 
-## What's New
+## 🎉 What's New — Phase 2 complete
 
-<details>
-<summary><b>v3.1 — Plan → Implementation Pass</b> <code>🚧 In Progress</code></summary>
+<details open>
+<summary><b>v3.2 — Project board automation</b> <code>✅ Shipped 2026-04-18</code></summary>
+<br>
 
-`github-sync --execute` closes the final gap in the GitHub-native loop: it reads a reviewed-and-merged plan and runs a full implementation pass on a fresh `impl/<slug>` branch, ready for human review and PR.
+**Phase 2 is done.** The GitHub-native loop now runs end-to-end from `docs/architecture.md` all the way to a code PR with automatic project-board status moves.
 
-**Also shipping in v3.1:**
-- `--yes` / `-y` on both `push-architecture` and `github-sync` — skip the confirmation prompt for CI and scripted flows
-- Smart `--base` auto-detection via `gh repo view` — no more hardcoded `main`
+New in v3.2 — `--project <N>` on both `push-architecture` and `github-sync`:
+
+| Step | Item created | Status set |
+|---|---|---|
+| `push-architecture --project 1` | Feature Issues + umbrella | `Todo` |
+| `github-sync --issue N --project 1` (plan) | Plan PR | `In Progress` |
+| `github-sync --issue N --execute --open-pr --project 1` | Impl PR | `In Review` |
+
+`Closes #N` on the impl PR auto-closes the source Issue when merged — GitHub moves it to `Done` natively. Status moves are best-effort and skip silently when the project's Status field or option name isn't defined.
+
+See [`📋 Project board automation`](#project-board-automation-v32) below.
 
 </details>
 
 <details>
-<summary><b>v3.0 — GitHub-Native Automation</b> <code>✅ Shipped 2026-04-17</code></summary>
+<summary><b>v3.1 — Plan → Implementation Pass</b> <code>✅ Shipped 2026-04-18</code></summary>
+<br>
+
+`github-sync --issue N --execute` reads a reviewed-and-merged plan and produces one implementation pass on a fresh `impl/<slug>` branch, committed as a `wip(impl): ...` commit for human review. Later point releases added:
+
+- **`--open-pr`** (v3.1.2) — push branch + open a draft PR with files/commands/cost summary and a `Closes #N` trailer
+- **Auto self-review** (v3.1.3) — `npm test` + `npm run lint` run before the PR opens; results embedded as a Verification table in the PR body
+- **`--yes` / `-y`** — non-interactive approval on both commands
+- **Smart `--base`** — auto-detect repo default branch instead of hardcoding `main`
+
+</details>
+
+<details>
+<summary><b>v3.0 — GitHub-native automation</b> <code>✅ Shipped 2026-04-17</code></summary>
+<br>
 
 - `push-architecture` — parses `docs/architecture.md` and creates GitHub Milestones + one Issue per feature in one shot
 - `github-sync --issue N` — turns any feature Issue into a reviewed implementation plan (draft PR + Issue comment)
-- Idempotent re-runs, `--dry-run`, `--force`, `--ready`, `--no-comment`, `--yes` flags
+- Idempotent re-runs, `--dry-run`, `--force`, `--ready`, `--no-comment`
 
 </details>
 
 <details>
 <summary><b>v2.6 — Architecture Design Gate</b> <code>✅ Shipped 2026-04-16</code></summary>
+<br>
 
-After `generate`, an architect agent automatically produces a full system design before any feature code is written: ERD, real OpenAPI contract, ADRs, and domain skills.
+After `generate`, an architect agent automatically produces the full system design before any feature code is written: ERD, real OpenAPI contract, ADRs, and domain skills.
 
 </details>
 
@@ -69,6 +93,57 @@ A batteries-included framework that turns **any codebase into an agent-ready wor
 | **Cost-aware** | Every run ends with token counts + USD estimate |
 | **Tested + linted** | Jest covers `lib/`, ESLint enforces style, CI gates every PR (v2.5+) |
 | **Transparent** | Every agent, skill, and hook is a plain Markdown file you own and can edit |
+| **End-to-end GitHub loop** *(v3.2)* | Architecture → Issues → plan PR → impl PR → board moves, all from the CLI |
+
+---
+
+## 🔁 The GitHub-native loop
+
+Phase 2 of the framework (v2.7 → v3.2) turns GitHub itself into the coordination layer. One command per step; each step is independently useful and idempotent.
+
+```
+         ┌─────────────────────────────┐
+         │  docs/architecture.md       │  ← produced by v2.6 architect gate
+         │  contracts/api-spec.yaml    │
+         │  docs/decisions/*.md        │
+         └──────────────┬──────────────┘
+                        │
+                        │  npx @kooleklabs/agentic-app push-architecture --project 1
+                        ▼
+         ┌─────────────────────────────┐
+         │  GitHub Milestone           │
+         │  Feature Issue × N          │  Status: Todo
+         │  Umbrella Issue (index)     │
+         └──────────────┬──────────────┘
+                        │
+                        │  npx @kooleklabs/agentic-app github-sync --issue 42 --project 1
+                        ▼
+         ┌─────────────────────────────┐
+         │  docs/plans/<slug>.md       │  ← Claude generates
+         │  Draft plan PR              │  Status: In Progress
+         │  Issue comment "Plan PR #M" │
+         └──────────────┬──────────────┘
+                        │
+                        │  (human reviews + merges the plan PR)
+                        │
+                        │  npx @kooleklabs/agentic-app github-sync --issue 42 --execute --open-pr --project 1
+                        ▼
+         ┌─────────────────────────────┐
+         │  impl/<slug> branch         │
+         │  wip(impl): <feat> commit   │  ← Claude implements the plan
+         │  Self-review: tests + lint  │
+         │  Draft impl PR (Closes #42) │  Status: In Review
+         └──────────────┬──────────────┘
+                        │
+                        │  (human reviews diff + merges)
+                        ▼
+                ┌──────────────┐
+                │  Issue #42   │  Status: Done (native)
+                │  closed      │
+                └──────────────┘
+```
+
+**The full arc runs in under 10 minutes** once the plan is merged. Every step has a `--dry-run` preview, every LLM call has a cost cap, every human gate is explicit. See [Commands](#-commands) for the per-step details or jump to the [end-to-end example](#-example-session--from-requirement-to-pr).
 
 ---
 
@@ -872,12 +947,27 @@ Defaults favor plan-first, test-before-commit workflows. The architect agent run
 | Phase | Version | What ships | Status |
 |:-----:|---------|------------|:------:|
 | **1** | `v2.5` + `v2.6` | **Stability + Architecture Design Gate** — Jest suite, ESLint, CI, auto-chmod hooks; architect agent produces full system design (ERD, OpenAPI, ADRs) before any code is written | ✅ Shipped 2026-04-16 |
-| **2** | `v3.0` | **GitHub-Native Automation** — `push-architecture` creates Milestones + Issues; `github-sync --issue N` generates a plan PR from any feature Issue | ✅ Shipped 2026-04-17 |
-| **2.1** | `v3.1` | **Plan → Implementation Pass** — `github-sync --issue N --execute` reads a merged plan and produces a WIP implementation branch; `--yes` for CI; smart `--base` auto-detection | 🚧 In Progress |
+| **2** | `v2.7` → `v3.2` | **GitHub-Native Automation** — full loop: `push-architecture` → `github-sync` (plan) → `--execute` (WIP commit) → `--open-pr` (auto draft PR + self-review) → `--project` (board moves). 335 tests, 11 releases. | ✅ Shipped 2026-04-18 |
 | **3** | `v3.5` | **Master Orchestrator Engine** — `orchestrate --goal "..."` decomposes goals into GitHub Issues, sequences them, assigns agents | 📋 Planned |
 | **4** | `v4.0` | **Parallel Multi-Agent Factory** — Architect + Coder teams + Security + Tester run simultaneously with a self-review loop | 📋 Planned |
 | **5** | `v4.5` | **aman-agent Core** — long-term memory, knowledge graph, skill crystallization, post-mortem & self-reflection | 📋 Planned |
 | **6** | `v5.0` | **Enterprise Self-Improvement** — SAST/DAST on every PR, audit logs, policy enforcement, self-improving agents | 📋 Planned |
+
+<details>
+<summary><b>Phase 2 in detail</b> (click to expand)</summary>
+<br>
+
+| Release | Ships |
+|---|---|
+| `v2.7` | `push-architecture` — Milestone + feature Issues + umbrella Issue from `docs/architecture.md` |
+| `v3.0` | `github-sync --issue N` — read-only planner, opens a draft plan PR |
+| `v3.1.0` | `github-sync --execute` — agent implements the merged plan on `impl/<slug>` with a WIP commit |
+| `v3.1.1` | Hygiene patches — `node_modules` excluded from WIP commit, SDK `maxBudgetUsd` cost cap, branch-stranding fix |
+| `v3.1.2` | `--open-pr` — auto-push + open draft PR with `Closes #N` and a structured body |
+| `v3.1.3` | Auto self-review — `npm test` + `npm run lint` run before PR opens; results embedded in the PR body |
+| `v3.2.0` | `--project <N>` — attach items to a GitHub Project board; Status moves across `Todo` → `In Progress` → `In Review` → `Done` |
+
+</details>
 
 <details>
 <summary><b>What the end state looks like</b></summary>
