@@ -3,6 +3,29 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.2] — 2026-04-18
+
+### Added
+
+- **`--open-pr` flag** on `github-sync --execute` — opt-in (default off). After the WIP commit succeeds, pushes `impl/<slug>` to origin and opens a draft PR titled `implement: <feature>` with:
+  - `Closes #<N>` (auto-closes the source Issue on merge)
+  - Files written + commands run by the agent
+  - WIP commit SHA and cost
+  - Warning annotations when no files were written or no verification commands ran
+- The source Issue gets a comment pointing to the new PR.
+- New module: `lib/gh-impl-pr.js`. CI `--help` smoke extended.
+
+### Notes
+
+- If push or PR creation fails after the commit is made, the result is `{ok: false, error, impl: {sha, ...}}` — the commit is preserved locally so the user can retry manually. No auto-retry.
+- `/self-review` integration (run tests + lint before opening PR) is deferred to v3.1.3.
+
+### Tested
+
+- 306 tests across 29 suites (+13 for v3.1.2).
+
+---
+
 ## [3.1.1] — 2026-04-18
 
 ### Fixed
