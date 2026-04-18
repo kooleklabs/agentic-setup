@@ -3,6 +3,41 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] — 2026-04-18
+
+Second Phase 2 release — the plan-consumer half of the loop.
+
+### Added
+
+- **`github-sync --issue N --execute`** reads a merged plan document from `docs/plans/<slug>.md`, runs ONE implementation pass on a fresh `impl/<slug>` branch with Write / Edit / Read / Bash tools enabled, and commits the result as a single `wip(impl): <feature> (refs #<N>)` commit. **No PR is opened** — human inspects the diff and decides.
+- **Pre-flight checks** (all produce clean `{ok: false, error}` with actionable guidance): plan file exists + passes section validator, plan PR is merged (plan branch gone from origin), impl branch doesn't exist locally or remotely, working tree is clean.
+- **`--execute` flags:** `--impl-branch <name>` (override default branch name), `--max-cost-usd <n>` (soft cost cap, default $5.00). `--dry-run` short-circuits before the SDK call.
+- **Issue comment on success** — `"Implementation pass complete on branch ..."`. Skip with `--no-comment`.
+
+### Changed
+
+- **`--yes` / `-y` flag** on both `push-architecture` and `github-sync`. Skips the interactive approval prompt. Unblocks CI, cron, and scripted flows. Wires the pre-existing `autoApprove` option through to the CLI.
+- **`--base` auto-detection** via `gh repo view --json defaultBranchRef`. Fixes repos with `master` / `develop` / custom default branches. Explicit `--base <name>` still wins.
+- New modules: `lib/default-branch.js`, `lib/plan-reader.js`, `lib/impl-generator.js`, `lib/gh-impl-branch.js`. Plus `remoteBranchExists` helper added to `gh-impl-branch`.
+
+### Tested
+
+- 289 tests across 28 suites (+41 for v3.1 modules — default-branch, plan-reader, gh-impl-branch, impl-generator, execute-mode orchestrator paths, execute-mode CLI flags, and extended push-architecture / github-sync CLI defaults).
+- Real-SDK E2E against a throwaway repo: `push-architecture` seeded → plan PR #5 merged → fresh clone → `github-sync --issue 3 --execute --yes` → produced a WIP commit with 16 files on `impl/search-by-title`, posted the linking Issue comment, cost ~$0.73 via `claude-sonnet-4-6`. Re-run without `--force` correctly failed fast with the branch-exists guidance.
+
+### Known issues (tracked for v3.1.1)
+
+- **Agent may commit `node_modules/` or other transient artifacts** when `git add -A` sweeps up files created during tool-use (`npm install` etc.). The plan prompt doesn't currently enforce `.gitignore` hygiene. Workaround: run `git reset HEAD node_modules/ && git commit --amend` on the WIP commit.
+- **Cost-cap tracker is inaccurate** — `--max-cost-usd` reads `message.usage` per assistant message, but the SDK's usage field is only populated on some messages, so the accumulated total is effectively zero in practice. The hard abort therefore does not fire. Cap is a soft documentation promise for v3.1.0; v3.1.1 will wire it to the SDK's authoritative cost tracking.
+- **`--dry-run` with `--execute` creates the impl branch** before returning (side-effect of reusing the pre-flight gate). Re-runs need `git branch -D impl/<slug>` between dry-run and real run. Considering for v3.1.1: move branch creation after the dry-run short-circuit.
+
+### Upgrade notes
+
+- **No breaking changes.** All v3.0.x behaviour is preserved. The major release gate stays at v3.0.
+- `--execute` requires the plan PR to be **merged** into the base branch before running (enforced by pre-flight).
+
+---
+
 ## [3.0.2] — 2026-04-17
 
 ### Fixed
