@@ -158,18 +158,22 @@ Phase 2 of the framework (v2.7 → v3.2) turns GitHub itself into the coordinati
 
 </details>
 
-> **Prerequisites:** Node.js ≥18 and [Claude Code](https://docs.claude.com/en/docs/claude-code) or [Copilot CLI](https://docs.github.com/copilot/concepts/agents/about-copilot-cli) (or both). `pandoc` or `pdftotext` only needed if you feed `.docx` / `.pdf`.
+> **Prerequisites:** Node.js ≥18 and [Claude Code](https://docs.claude.com/en/docs/claude-code) or [Copilot CLI](https://docs.github.com/copilot/concepts/agents/about-copilot-cli). Steps 2–4 additionally require the [`gh` CLI](https://cli.github.com) (`gh auth login`). `pandoc` / `pdftotext` only if you feed `.docx` / `.pdf`.
+
+### 1️⃣ Scaffold the framework into your project
 
 ```bash
 cd your-project
 
 # Pick one:
 npx @kooleklabs/agentic-app init                              # blank scaffolding
-npx @kooleklabs/agentic-app generate --from proposal.docx    # from a PRD / spec
+npx @kooleklabs/agentic-app generate --from proposal.docx     # from a PRD / spec
 npx @kooleklabs/agentic-app migrate                           # existing codebase
 ```
 
-By default, the framework generates artifacts for **both** Claude Code and Copilot CLI. Use `--target` to choose:
+`generate` runs the **Architecture Design Gate** (v2.6+): an architect agent writes `docs/architecture.md`, ADRs, and `contracts/api-spec.yaml` before any feature code. Review, edit, commit.
+
+Pick which agent host to target with `--target`:
 
 ```bash
 npx @kooleklabs/agentic-app init --target claude    # Claude Code only
@@ -177,7 +181,39 @@ npx @kooleklabs/agentic-app init --target copilot   # Copilot CLI only (+ CLAUDE
 npx @kooleklabs/agentic-app init --target both      # Both (default)
 ```
 
-`npx` pulls the latest release from npm, runs once, and caches it. No clone. No curl. No path juggling.
+### 2️⃣ Push the architecture to GitHub *(v2.7+)*
+
+Turn each `### Feature:` block in `architecture.md` into a GitHub Issue with acceptance criteria, linked ADRs, and API paths — plus a Milestone and an umbrella tracking Issue:
+
+```bash
+npx @kooleklabs/agentic-app push-architecture --project 1 --yes
+```
+
+Idempotent — re-run safely after editing `architecture.md`. Only new features get created. `--project <N>` attaches each Issue to your GitHub Project board with Status `Todo`.
+
+### 3️⃣ Plan a feature *(v3.0+)*
+
+Pick a feature Issue number and generate a structured implementation plan as a draft PR:
+
+```bash
+npx @kooleklabs/agentic-app github-sync --issue 42 --project 1 --yes
+```
+
+Outputs `docs/plans/<slug>.md` (8 sections: Problem / Approach / Files to change / Implementation steps / Test plan / Rollback / …), opens a draft PR, posts a comment on Issue #42. Review the plan PR and merge when satisfied.
+
+### 4️⃣ Execute the plan *(v3.1+)*
+
+After the plan PR is merged, run one implementation pass:
+
+```bash
+npx @kooleklabs/agentic-app github-sync --issue 42 --execute --open-pr --yes --project 1
+```
+
+The agent creates `impl/<slug>` from your default branch, writes code per the plan, runs `npm test` + `npm run lint`, commits as a `wip(impl): …` commit, pushes, and opens a draft PR titled `implement: <feature>` with a `Closes #42` trailer and a Verification table. Review the diff, amend if needed, mark ready, merge.
+
+**That's the full arc** — architecture → Issues → plan → code — driven entirely from the CLI. Each step has `--dry-run` for a preview and `--yes` for CI / cron.
+
+> `npx` pulls the latest release from npm, runs once, and caches it. No clone, no curl, no path juggling.
 
 ---
 
