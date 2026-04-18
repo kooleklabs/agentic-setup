@@ -398,7 +398,27 @@ npx @kooleklabs/agentic-app github-sync --issue 42 --execute --yes --open-pr
 
 **Auto self-review with `--open-pr` (v3.1.3+):** before the PR opens, `npm test` and `npm run lint` run automatically (when `package.json` defines the scripts). Results land in a "Verification" table in the PR body with pass/fail per check and duration. Failures do NOT block PR creation — they surface as a warning so reviewers see the signal. Python and other stacks ship in a later release.
 
-**Next step (v3.2):** project-board automation — Issues move across columns as PRs open/merge.
+### Project board automation (v3.2+)
+
+Pass `--project <N>` to either command to attach created items to GitHub Project #N and set their Status column. Status moves are best-effort — if the project has no Status field or the option name isn't defined, the item is added without moving the column.
+
+| Command | Action | Status set |
+|---|---|---|
+| `push-architecture --project N` | Each feature Issue + umbrella Issue → added to project | Todo |
+| `github-sync --issue N --project P` (plan mode) | Plan PR → added to project | In Progress |
+| `github-sync --issue N --execute --open-pr --project P` | Impl PR → added to project | In Review |
+
+Examples:
+
+```bash
+npx @kooleklabs/agentic-app push-architecture --project 1
+npx @kooleklabs/agentic-app github-sync --issue 42 --project 1
+npx @kooleklabs/agentic-app github-sync --issue 42 --execute --yes --open-pr --project 1
+```
+
+The status option names are matched literally (`Todo`, `In Progress`, `In Review`) — rename your project columns to match, or the move is skipped silently with a console note.
+
+**Done column on close:** v3.2 relies on GitHub's native "closed Issue → Done" workflow. When the impl PR merges, the `Closes #N` trailer auto-closes the source Issue and GitHub moves it. No extra work from the CLI.
 
 **Requires:** the same environment as the plan mode above — `gh` CLI + Claude credentials.
 

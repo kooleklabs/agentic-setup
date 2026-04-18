@@ -140,17 +140,20 @@ jobs:
       - name: Smoke test — github-sync --help documents all flags
         run: |
           HELP=$(node "$GITHUB_WORKSPACE/bin/cli.js" github-sync --help)
-          for flag in "--issue" "--dry-run" "--force" "--no-comment" "--model" "--base" "--ready" "--yes" "--execute" "--impl-branch" "--max-cost-usd" "--open-pr"; do
+          for flag in "--issue" "--dry-run" "--force" "--no-comment" "--model" "--base" "--ready" "--yes" "--execute" "--impl-branch" "--max-cost-usd" "--open-pr" "--project"; do
             echo "$HELP" | grep -q -- "$flag" \
               || { echo "::error::$flag not documented in github-sync --help"; exit 1; }
           done
           echo "github-sync --help smoke passed"
 
-      - name: Smoke test — push-architecture --help documents --yes
+      - name: Smoke test — push-architecture --help documents --yes + --project
         run: |
-          node "$GITHUB_WORKSPACE/bin/cli.js" push-architecture --help | grep -q -- "--yes" \
-            || { echo "::error::--yes flag not documented in push-architecture --help"; exit 1; }
-          echo "push-architecture --yes smoke passed"
+          HELP=$(node "$GITHUB_WORKSPACE/bin/cli.js" push-architecture --help)
+          for flag in "--yes" "--project"; do
+            echo "$HELP" | grep -q -- "$flag" \
+              || { echo "::error::$flag not documented in push-architecture --help"; exit 1; }
+          done
+          echo "push-architecture --yes / --project smoke passed"
 
   shellcheck:
     name: shellcheck
