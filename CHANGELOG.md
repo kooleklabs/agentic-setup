@@ -3,6 +3,31 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), following [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] — 2026-04-18
+
+**Phase 2 complete.** GitHub-native automation loop is end-to-end.
+
+### Added
+
+- **`--project <N>`** flag on both `push-architecture` and `github-sync`. Created Issues and PRs are added to GitHub Project #N and their Status column is set based on the lifecycle event:
+  - `push-architecture`: each feature Issue + umbrella Issue → Status `Todo`
+  - `github-sync` (plan mode): plan PR → Status `In Progress`
+  - `github-sync --execute --open-pr`: impl PR → Status `In Review`
+- **Best-effort posture** — if the project has no `Status` field or the option name isn't defined, the item is added without moving the column. Run never aborts on project errors; console logs the outcome.
+- **Done column** relies on GitHub's native behaviour when the impl PR merges with `Closes #N`. No additional work from the CLI.
+- New module: `lib/gh-project.js` with `addItemToProject`, `setItemStatus`, and the composite `attachToProject`.
+
+### Tested
+
+- 335 tests across 30 suites (+18 for v3.2).
+
+### Notes
+
+- Status option names are matched literally (`Todo`, `In Progress`, `In Review`). Rename project columns to match or the move is skipped silently.
+- `--project` and status-setting are tightly coupled by design; no separate opt-out flag.
+
+---
+
 ## [3.1.3] — 2026-04-18
 
 ### Added
